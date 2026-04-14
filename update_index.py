@@ -10,7 +10,7 @@ import os
 import sys
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib import request
 from urllib.error import HTTPError
@@ -63,7 +63,9 @@ def make_api_request(url):
 def get_week_range(date=None):
     """Get start and end of the week for a given date."""
     if date is None:
-        date = datetime.now()
+        date = datetime.now(timezone.utc)
+    elif date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
     
     # Get Sunday of current week
     end = date - timedelta(days=date.weekday() + 1)
@@ -110,6 +112,11 @@ def fetch_prs(start_date, end_date, state="all"):
     filtered_prs = []
     for pr in data:
         pr_date = datetime.fromisoformat(pr["created_at"].replace("Z", "+00:00"))
+        # Ensure start_date and end_date are timezone-aware
+        if start_date.tzinfo is None:
+            start_date = start_date.replace(tzinfo=timezone.utc)
+        if end_date.tzinfo is None:
+            end_date = end_date.replace(tzinfo=timezone.utc)
         if start_date <= pr_date <= end_date:
             filtered_prs.append(pr)
     

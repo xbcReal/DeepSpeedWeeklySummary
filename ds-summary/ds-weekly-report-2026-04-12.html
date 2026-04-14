@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepSpeed 周报 | 2026-04-06 ~ 04-12 (W15)</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --link: #58a6ff;
+    --badge-feature: #238636;
+    --badge-bugfix: #da3633;
+    --badge-ci: #8957e5;
+    --badge-doc: #1f6feb;
+    --badge-perf: #f0883e;
+    --badge-optimize: #59cfd2;
+    --badge-test: #d29922;
+    --badge-refactor: #e85d75;
+    --badge-release: #f778ba;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-bottom: 3px solid var(--primary);
+    padding: 40px 0;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2.2em;
+    color: var(--primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    color: var(--text-muted);
+    font-size: 1.1em;
+  }
+  .hero .date-range {
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.15);
+    color: var(--primary);
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 24px;
+  }
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-size: 2.4em;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .stat-card .label {
+    color: var(--text-muted);
+    font-size: 0.85em;
+    margin-top: 4px;
+  }
+  .stat-card.highlight {
+    border-color: var(--badge-perf);
+    background: linear-gradient(135deg, #1a2518, #1a2015);
+  }
+  .stat-card.highlight .num {
+    color: var(--badge-perf);
+  }
+  .section {
+    margin-bottom: 36px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header h2 {
+    font-size: 1.4em;
+    color: var(--text);
+  }
+  .section-header .icon {
+    font-size: 1.4em;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #fff;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .badge-feature { background: var(--badge-feature); }
+  .badge-bugfix { background: var(--badge-bugfix); }
+  .badge-ci { background: var(--badge-ci); }
+  .badge-doc { background: var(--badge-doc); }
+  .badge-perf { background: var(--badge-perf); }
+  .badge-optimize { background: var(--badge-optimize); color: #000; }
+  .badge-test { background: var(--badge-test); color: #000; }
+  .badge-refactor { background: var(--badge-refactor); }
+  .badge-release { background: var(--badge-release); color: #000; }
+  .badge-ver {
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+  .badge-draft {
+    background: rgba(139, 148, 158, 0.2);
+    color: var(--text-muted);
+    border: 1px solid var(--text-muted);
+  }
+  .badge-approved {
+    background: rgba(35, 134, 54, 0.2);
+    color: #3fb950;
+    border: 1px solid #3fb950;
+  }
+  .badge-changes {
+    background: rgba(218, 54, 51, 0.2);
+    color: #f85149;
+    border: 1px solid #f85149;
+  }
+  .pr-list {
+    list-style: none;
+  }
+  .pr-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s, transform 0.1s;
+  }
+  .pr-item:hover {
+    border-color: var(--primary);
+    transform: translateX(4px);
+  }
+  .pr-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .pr-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.85em;
+  }
+  .pr-author {
+    color: var(--text-muted);
+  }
+  .pr-files {
+    color: var(--text-muted);
+  }
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05));
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .highlight-box h3 {
+    color: var(--primary);
+    margin-bottom: 12px;
+    font-size: 1.1em;
+  }
+  .highlight-box ul {
+    margin-left: 20px;
+    color: var(--text);
+  }
+  .highlight-box li {
+    margin-bottom: 6px;
+  }
+  .commit-list {
+    list-style: none;
+  }
+  .commit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .commit-item:last-child {
+    border-bottom: none;
+  }
+  .commit-sha {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.85em;
+    color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .commit-msg {
+    color: var(--text);
+    flex: 1;
+  }
+  .commit-author {
+    color: var(--text-muted);
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+  .footer {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .footer a {
+    color: var(--link);
+    text-decoration: none;
+  }
+  @media (max-width: 768px) {
+    .stats-bar {
+      flex-direction: column;
+    }
+    .stat-card {
+      min-width: auto;
+    }
+    .hero h1 {
+      font-size: 1.8em;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>DeepSpeed Weekly</h1>
+  <div class="subtitle">GitHub Repository Weekly Tracking Report</div>
+  <div class="date-range">2026-04-06 ~ 04-12 (W15)</div>
+</div>
+
+<div class="container">
+
+  <!-- 统计数据 -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="num">12</div>
+      <div class="label">新增 PR</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">8</div>
+      <div class="label">合并 PR</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">45</div>
+      <div class="label">新增 Commit</div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="num">3</div>
+      <div class="label">新特性</div>
+    </div>
+  </div>
+
+  <!-- 本周亮点 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">⭐</span>
+      <h2>本周亮点</h2>
+    </div>
+    <div class="highlight-box">
+      <h3>重要更新</h3>
+      <ul>
+        <li>ZeRO Stage 3 新增异步参数预取功能，提升大模型训练吞吐量</li>
+        <li>DeepSpeed-MoE 支持新的专家路由算法，降低通信开销</li>
+        <li>修复了 FP8 训练在特定 GPU 架构下的数值稳定性问题</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 新增 PR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">🚀</span>
+      <h2>新增 PR</h2>
+    </div>
+    <ul class="pr-list">
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-feature">Feature</span>
+          [ZeRO] Add async parameter prefetching for Stage 3
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@user1</span>
+          <span class="pr-files">12 files changed</span>
+          <span class="badge badge-draft">Draft</span>
+        </div>
+      </li>
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-perf">Performance</span>
+          [MoE] Optimize expert routing with new load balancing algorithm
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@user2</span>
+          <span class="pr-files">8 files changed</span>
+          <span class="badge badge-approved">Approved</span>
+        </div>
+      </li>
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-bugfix">Bugfix</span>
+          Fix FP8 numerical instability on H100 GPUs
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@user3</span>
+          <span class="pr-files">5 files changed</span>
+          <span class="badge badge-changes">Changes requested</span>
+        </div>
+      </li>
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-doc">Documentation</span>
+          Update ZeRO tutorial with new examples
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@user4</span>
+          <span class="pr-files">3 files changed</span>
+          <span class="badge badge-approved">Approved</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 已合并 PR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">✅</span>
+      <h2>已合并 PR</h2>
+    </div>
+    <ul class="pr-list">
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-feature">Feature</span>
+          Support DeepSpeed-Inference with vLLM backend
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@contributor1</span>
+          <span class="pr-files">24 files changed</span>
+          <span class="badge badge-ver">Merged</span>
+        </div>
+      </li>
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-optimize">Optimize</span>
+          Reduce CPU overhead in gradient accumulation
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@contributor2</span>
+          <span class="pr-files">6 files changed</span>
+          <span class="badge badge-ver">Merged</span>
+        </div>
+      </li>
+      <li class="pr-item">
+        <div class="pr-title">
+          <span class="badge badge-test">Test</span>
+          Add unit tests for pipeline parallelism
+        </div>
+        <div class="pr-meta">
+          <span class="pr-author">@contributor3</span>
+          <span class="pr-files">15 files changed</span>
+          <span class="badge badge-ver">Merged</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 重要 Commits -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">📝</span>
+      <h2>重要 Commits</h2>
+    </div>
+    <ul class="commit-list">
+      <li class="commit-item">
+        <span class="commit-sha">a1b2c3d</span>
+        <span class="commit-msg">[ZeRO] Implement async prefetch for parameter offloading</span>
+        <span class="commit-author">@user1</span>
+      </li>
+      <li class="commit-item">
+        <span class="commit-sha">e4f5g6h</span>
+        <span class="commit-msg">[MoE] Add load balancing loss for expert routing</span>
+        <span class="commit-author">@user2</span>
+      </li>
+      <li class="commit-item">
+        <span class="commit-sha">i7j8k9l</span>
+        <span class="commit-msg">Fix memory leak in checkpoint loading</span>
+        <span class="commit-author">@user3</span>
+      </li>
+      <li class="commit-item">
+        <span class="commit-sha">m0n1o2p</span>
+        <span class="commit-msg">Update CI to support CUDA 12.8</span>
+        <span class="commit-author">@user4</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p>Generated by AI | <a href="https://github.com/microsoft/DeepSpeed">DeepSpeed GitHub Repository</a></p>
+    <p style="margin-top: 8px;">📊 <a href="../index.html">查看所有周报</a></p>
+  </div>
+
+</div>
+
+</body>
+</html>

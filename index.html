@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeepSpeed Weekly Summary</title>
-    <meta http-equiv="refresh" content="0; url=ds-summary/deepspeed-weekly-report-2026-04-13.html">
     <style>
         :root {
             --primary: #2563eb;
@@ -22,102 +21,220 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 40px 20px;
         }
         .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
             text-align: center;
-            padding: 40px;
+            margin-bottom: 40px;
         }
         h1 {
             font-size: 2.5em;
             color: var(--primary);
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
         .subtitle {
             color: var(--text-muted);
             font-size: 1.2em;
-            margin-bottom: 24px;
         }
-        .redirect-notice {
+        .countdown-box {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 24px 32px;
-            margin-top: 20px;
+            padding: 20px;
+            margin-bottom: 32px;
+            text-align: center;
         }
-        .redirect-notice p {
+        .countdown-box p {
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
-        .redirect-notice a {
+        .countdown-box .timer {
+            color: var(--primary);
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .countdown-box a {
             color: var(--link);
             text-decoration: none;
             font-weight: 600;
         }
-        .redirect-notice a:hover {
+        .countdown-box a:hover {
             text-decoration: underline;
         }
-        .archive-section {
-            margin-top: 48px;
-            text-align: left;
-            max-width: 600px;
+        .latest-section, .archive-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
         }
-        .archive-section h2 {
+        .latest-section h2, .archive-section h2 {
             font-size: 1.3em;
-            color: var(--text);
             margin-bottom: 16px;
-            padding-bottom: 8px;
+            padding-bottom: 12px;
             border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .archive-list {
+        .latest-section .badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .report-list {
             list-style: none;
         }
-        .archive-list li {
-            margin-bottom: 8px;
+        .report-list li {
+            margin-bottom: 12px;
         }
-        .archive-list a {
+        .report-list a {
             color: var(--link);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 6px;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
             transition: background 0.2s;
+            border: 1px solid transparent;
         }
-        .archive-list a:hover {
+        .report-list a:hover {
             background: rgba(88, 166, 255, 0.1);
+            border-color: var(--border);
         }
-        .archive-list .date {
+        .report-list .title {
+            font-weight: 500;
+        }
+        .report-list .date {
             color: var(--text-muted);
             font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .report-list .latest {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--primary);
+        }
+        .cancel-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .cancel-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+        .cancel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        .footer a {
+            color: var(--link);
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>DeepSpeed Weekly</h1>
-        <p class="subtitle">GitHub Repository Weekly Tracking Report</p>
-        
-        <div class="redirect-notice">
-            <p>正在跳转到最新周报...</p>
-            <p>如果没有自动跳转，请 <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html">点击这里</a></p>
+        <header>
+            <h1>DeepSpeed Weekly</h1>
+            <p class="subtitle">GitHub Repository Weekly Tracking Report</p>
+        </header>
+
+        <div class="countdown-box" id="countdownBox">
+            <p>将在 <span class="timer" id="timer">5</span> 秒后自动跳转到最新周报</p>
+            <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html">立即查看最新周报 →</a>
+            <br>
+            <button class="cancel-btn" id="cancelBtn" onclick="cancelRedirect()">取消自动跳转</button>
         </div>
 
-        <div class="archive-section">
-            <h2>近期周报</h2>
-            <ul class="archive-list">
+        <div class="latest-section">
+            <h2>
+                <span>最新周报</span>
+                <span class="badge">NEW</span>
+            </h2>
+            <ul class="report-list">
                 <li>
-                    <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html">
-                        <span>DeepSpeed Weekly Report - 2026-04-13</span>
+                    <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html" class="latest">
+                        <span class="title">DeepSpeed Weekly Report - 2026-04-13</span>
                         <span class="date">2026-04-13</span>
                     </a>
                 </li>
             </ul>
         </div>
+
+        <div class="archive-section">
+            <h2>历史周报</h2>
+            <ul class="report-list" id="archiveList">
+                <li>
+                    <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html">
+                        <span class="title">DeepSpeed Weekly Report - 2026-04-13</span>
+                        <span class="date">2026-04-13</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>数据来源: <a href="https://github.com/microsoft/DeepSpeed" target="_blank">microsoft/DeepSpeed</a></p>
+        </div>
     </div>
+
+    <script>
+        let countdown = 5;
+        let timerId = null;
+        const latestReportUrl = 'ds-summary/deepspeed-weekly-report-2026-04-13.html';
+
+        function updateTimer() {
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = countdown;
+
+            if (countdown <= 0) {
+                window.location.href = latestReportUrl;
+            } else {
+                countdown--;
+                timerId = setTimeout(updateTimer, 1000);
+            }
+        }
+
+        function cancelRedirect() {
+            if (timerId) {
+                clearTimeout(timerId);
+                timerId = null;
+            }
+            const box = document.getElementById('countdownBox');
+            const btn = document.getElementById('cancelBtn');
+            box.innerHTML = '<p style="color: var(--text-muted);">自动跳转已取消，请手动选择周报查看</p>';
+            btn.disabled = true;
+        }
+
+        // 启动倒计时
+        timerId = setTimeout(updateTimer, 1000);
+
+        // 动态扫描 ds-summary 目录下的所有周报文件
+        async function loadArchiveList() {
+            // 这里可以通过 fetch 获取目录列表，或者由 Qoder Worker 生成时更新
+            // 目前使用静态列表，Qoder Worker 生成新报告时可以更新此列表
+        }
+    </script>
 </body>
 </html>

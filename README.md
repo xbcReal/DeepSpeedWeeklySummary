@@ -9,7 +9,7 @@
 - 📊 **自动统计**: PR 数量、合并数量、Commit 数量、新特性数量
 - 🏷️ **智能分类**: 根据 PR 标题自动分类（Feature/Bugfix/Performance/Docs 等）
 - 🎨 **精美界面**: 深色主题，响应式设计
-- 🔄 **自动更新**: 每周日自动生成新周报
+- 🤖 **AI 生成**: 使用 Qoder Worker 自动生成周报内容
 - 📱 **自动跳转**: 首页自动跳转到最新周报
 
 ## 目录结构
@@ -17,47 +17,29 @@
 ```
 .
 ├── index.html              # 主页，自动跳转到最新周报
-├── update_index.py         # 周报生成脚本
+├── update_index.py         # 周报生成脚本（备用）
 ├── ds-summary/             # 周报文件目录
 │   └── ds-weekly-report-YYYY-MM-DD.html
-├── .github/
-│   └── workflows/
-│       └── generate-weekly.yml  # GitHub Actions 自动化
 └── README.md
 ```
 
-## 本地运行
+## 生成方式
 
-### 1. 安装依赖
+本项目使用 **Qoder Worker** 自动生成周报：
+
+1. Qoder Worker 定时任务每周自动收集 DeepSpeed 仓库更新
+2. 生成 HTML 格式的周报并保存到 `ds-summary/` 目录
+3. 自动提交并推送到 GitHub
+4. GitHub Pages 自动部署更新
+
+### 备用：本地生成
+
+如需手动生成本地周报：
 
 ```bash
 pip install requests beautifulsoup4
-```
-
-### 2. 生成周报
-
-```bash
 python update_index.py
 ```
-
-### 3. 查看结果
-
-打开 `index.html` 或 `ds-summary/ds-weekly-report-YYYY-MM-DD.html`
-
-## GitHub Actions 自动化
-
-已配置每周日 UTC 00:00 自动生成周报。如需手动触发：
-
-1. 进入仓库 Actions 页面
-2. 选择 "Generate Weekly Summary"
-3. 点击 "Run workflow"
-
-## 配置 GitHub Token（可选）
-
-如需提高 API 请求限制，可配置 GitHub Token：
-
-1. 生成 Personal Access Token: [GitHub Settings](https://github.com/settings/tokens)
-2. 在仓库 Settings -> Secrets -> Actions 中添加 `GITHUB_TOKEN`
 
 ## 周报内容
 

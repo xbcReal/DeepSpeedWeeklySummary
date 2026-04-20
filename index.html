@@ -162,7 +162,7 @@
 
         <div class="countdown-box" id="countdownBox">
             <p>将在 <span class="timer" id="timer">5</span> 秒后自动跳转到最新周报</p>
-            <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html">立即查看最新周报 →</a>
+            <a href="deepspeed-weekly-report-2026-04-19.html">立即查看最新周报 →</a>
             <br>
             <button class="cancel-btn" id="cancelBtn" onclick="cancelRedirect()">取消自动跳转</button>
         </div>
@@ -174,9 +174,9 @@
             </h2>
             <ul class="report-list">
                 <li>
-                    <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html" class="latest">
-                        <span class="title">DeepSpeed Weekly Report - 2026-04-13</span>
-                        <span class="date">2026-04-13</span>
+                    <a href="deepspeed-weekly-report-2026-04-19.html" class="latest">
+                        <span class="title">DeepSpeed Weekly Report - 2026-04-19</span>
+                        <span class="date">2026-04-13 ~ 2026-04-19</span>
                     </a>
                 </li>
             </ul>
@@ -185,6 +185,12 @@
         <div class="archive-section">
             <h2>历史周报</h2>
             <ul class="report-list" id="archiveList">
+                <li>
+                    <a href="deepspeed-weekly-report-2026-04-19.html">
+                        <span class="title">DeepSpeed Weekly Report - 2026-04-19</span>
+                        <span class="date">2026-04-13 ~ 2026-04-19</span>
+                    </a>
+                </li>
                 <li>
                     <a href="ds-summary/deepspeed-weekly-report-2026-04-13.html">
                         <span class="title">DeepSpeed Weekly Report - 2026-04-13</span>
@@ -195,14 +201,14 @@
         </div>
 
         <div class="footer">
-            <p>数据来源: <a href="https://github.com/microsoft/DeepSpeed" target="_blank">microsoft/DeepSpeed</a></p>
+            <p>数据来源: <a href="https://github.com/deepspeedai/DeepSpeed" target="_blank">deepspeedai/DeepSpeed</a></p>
         </div>
     </div>
 
     <script>
         let countdown = 5;
         let timerId = null;
-        const latestReportUrl = 'ds-summary/deepspeed-weekly-report-2026-04-13.html';
+        const latestReportUrl = 'deepspeed-weekly-report-2026-04-19.html';
 
         function updateTimer() {
             const timerEl = document.getElementById('timer');

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSpeed Weekly Report - 2026-05-12 to 2026-05-17</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header .date-range {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .header .highlight-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            width: 8px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 4px;
+        }
+        .category {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .category.feature {
+            border-left-color: #28a745;
+        }
+        .category.bugfix {
+            border-left-color: #ffc107;
+        }
+        .category.docs {
+            border-left-color: #17a2b8;
+        }
+        .category.infra {
+            border-left-color: #6c757d;
+        }
+        .category.security {
+            border-left-color: #e83e8c;
+        }
+        .category-title {
+            font-size: 1.3em;
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .pr-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e9ecef;
+        }
+        .pr-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .pr-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .pr-number.feature {
+            background: #28a745;
+        }
+        .pr-number.bugfix {
+            background: #ffc107;
+            color: #333;
+        }
+        .pr-number.docs {
+            background: #17a2b8;
+        }
+        .pr-number.infra {
+            background: #6c757d;
+        }
+        .pr-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .pr-title a {
+            color: #2a5298;
+            text-decoration: none;
+        }
+        .pr-title a:hover {
+            text-decoration: underline;
+        }
+        .pr-meta {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .pr-meta a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .pr-meta a:hover {
+            text-decoration: underline;
+        }
+        .pr-desc {
+            margin-top: 8px;
+            font-size: 0.95em;
+            color: #555;
+        }
+        .issue-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            border: 1px solid #e9ecef;
+        }
+        .issue-label {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .label-bug {
+            background: #ffeef0;
+            color: #d73a4a;
+        }
+        .label-enhancement {
+            background: #e6f7ff;
+            color: #0e8a16;
+        }
+        .label-training {
+            background: #e8f0fe;
+            color: #0052cc;
+        }
+        .label-closed {
+            background: #e8e8e8;
+            color: #6c757d;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .perf-highlight {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #28a745;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .perf-highlight h4 {
+            color: #28a745;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+        }
+        .perf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 0.9em;
+        }
+        .perf-table th, .perf-table td {
+            padding: 8px 12px;
+            border: 1px solid #c8e6c9;
+            text-align: center;
+        }
+        .perf-table th {
+            background: #28a745;
+            color: white;
+        }
+        .perf-table .gain {
+            color: #28a745;
+            font-weight: 700;
+        }
+        .roadmap-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 2px solid #9c27b0;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        .roadmap-box h4 {
+            color: #9c27b0;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+        }
+        .roadmap-box ul {
+            padding-left: 20px;
+        }
+        .roadmap-box li {
+            padding: 4px 0;
+            color: #555;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .back-link:hover {
+            background: #5a6fd6;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .no-data {
+            color: #999;
+            font-style: italic;
+            padding: 10px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-review {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-changes {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DeepSpeed Weekly Report</h1>
+            <div class="date-range">2026-05-12 ~ 2026-05-17</div>
+            <div class="highlight-badge">🚀 SDMA Allgather 为 ZeRO-3 带来 ~10% 性能提升</div>
+        </div>
+
+        <div class="content">
+            <!-- 统计概览 -->
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">合入 PR</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">新增 Review PR</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Issue 关闭</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">v0.19.0+</div>
+                    <div class="stat-label" style="font-size:0.8em;">持续迭代中</div>
+                </div>
+            </div>
+
+            <!-- 合入的 PR -->
+            <div class="section">
+                <div class="section-title">合入的 PR</div>
+
+                <div class="category feature">
+                    <div class="category-title">✨ 重要特性 / 性能优化</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7999</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7999">zero3: SDMA allgather via mori (sdma_allgather)</a>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/inkcherry">@inkcherry</a> | 合入时间：2026-05-14
+                        </div>
+                        <div class="pr-desc">
+                            将 <code>sdma_allgather</code> 集成到 ZeRO-3 的参数预取路径中。在 AMD MI300X 上，利用 SDMA（System DMA）进行节点内 allgather 操作，当初始化失败时可透明回退到 RCCL/NCCL。
+                        </div>
+                        <div class="perf-highlight" style="margin-top: 12px;">
+                            <h4>性能数据 (8x MI300X, 100 steps)</h4>
+                            <table class="perf-table">
+                                <tr><th>模型</th><th>SDMA Off</th><th>SDMA On</th><th>提升</th></tr>
+                                <tr><td>GPT-7B</td><td>697.7 ms/step</td><td>622.0 ms/step</td><td class="gain">+10.85%</td></tr>
+                                <tr><td>Qwen3-32B</td><td>1402.5 ms/step</td><td>1263.2 ms/step</td><td class="gain">+9.93%</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7997</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7997">Optimize singleton MoE collectives</a>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/Tianyi-Franklin-Wang">@Tianyi-Franklin-Wang</a> | 合入时间：2026-05-13
+                        </div>
+                        <div class="pr-desc">
+                            当 expert-parallel group 只有单个 rank 时，跳过不必要的 all-to-all 和 all_reduce(MAX) 操作。在下游 ep_size=1 的 MoE 训练中，将 late-step 耗时从 ~13s/update 降至 ~0.864s/update（约 <strong>15x 加速</strong>），loss 和 MoE 辅助 loss 保持稳定。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category bugfix">
+                    <div class="category-title">🐛 Bug 修复</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number bugfix">PR #8005</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8005">fix(io): close aio_fd in FastFileWriter._fini to prevent fd leak</a>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/jg-heo">@jg-heo</a> | 合入时间：2026-05-17
+                        </div>
+                        <div class="pr-desc">
+                            修复 <code>FastFileWriter._fini()</code> 中未关闭文件描述符的 bug。此前每次 save 泄漏一个 fd，结合 unlink-based checkpoint rotation 导致 ext4 孤儿 inode 堆积，长时间训练约 60 轮后触发 ENOSPC。修复后经 700 轮 / 42 TB / 60 小时耐久测试验证稳定。关联 Issue: <a href="https://github.com/deepspeedai/DeepSpeed/issues/8003">#8003</a>。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category infra">
+                    <div class="category-title">🔧 测试 / CI</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number infra">PR #8007</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8007">Update topkgating probability-mask test expectation</a>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/tohtana">@tohtana</a> | 合入时间：2026-05-13
+                        </div>
+                        <div class="pr-desc">
+                            更新 TestTopkGate 的预期 mask，以匹配 #7986（topkgating 重大 bug 修复）引入的概率选择逻辑。此前 full CI 因 mask 不匹配而失败。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 新提交待 Review 的 PR（本周） -->
+            <div class="section">
+                <div class="section-title">新提交待 Review 的 PR（本周）</div>
+
+                <div class="category feature">
+                    <div class="category-title">✨ 新特性</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #8010</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8010">Support bf16 optimizer states with CPU offload</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/lucaspirola">@lucaspirola</a> | 创建时间：2026-05-17
+                        </div>
+                        <div class="pr-desc">
+                            支持在 CPU offload 场景下使用 bf16 精度的优化器状态，有望进一步降低内存占用。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category bugfix">
+                    <div class="category-title">🐛 Bug 修复</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number bugfix">PR #8009</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8009">Fix ZeRO-3 forward crash on modules with plain dict _parameters</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/roycho96">@roycho96</a> | 创建时间：2026-05-17
+                        </div>
+                        <div class="pr-desc">
+                            修复 ZeRO-3 在模块使用普通 dict（而非 ParameterDict）作为 _parameters 属性时的前向传播崩溃问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number bugfix">PR #8008</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8008">Fix full CI test isolation for ZeRO chmod and NVMe quantization tests</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/tohtana">@tohtana</a> | 创建时间：2026-05-14
+                        </div>
+                        <div class="pr-desc">
+                            修复 full CI 中 ZeRO chmod 和 NVMe quantization 测试之间的隔离问题，确保测试不会互相干扰。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category docs">
+                    <div class="category-title">📝 文档</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number docs">PR #8011</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8011">Remove stale step() docstring from DeepSpeedCPUAdam</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/lucaspirola">@lucaspirola</a> | 创建时间：2026-05-17
+                        </div>
+                        <div class="pr-desc">
+                            移除 DeepSpeedCPUAdam 中过时的 step() 文档字符串，避免误导开发者。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 其他值得关注的 Review PR -->
+            <div class="section">
+                <div class="section-title">其他值得关注的 Review 中 PR</div>
+
+                <div class="category feature">
+                    <div class="category-title">✨ 重要特性（此前提交，仍在 Review）</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #8000</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8000">Auto-detect CUTLASS for EvoformerAttention</a>
+                            <span class="status-badge status-approved">APPROVED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/MaxTretikov">@MaxTretikov</a> | 创建时间：2026-05-08
+                        </div>
+                        <div class="pr-desc">自动检测 CUTLASS 路径，不再强制要求手动设置 CUTLASS_PATH 环境变量。已通过审批，待合入。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7992</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7992">Add engine.coalesce_grad_reduction() for ZeRO 1/2/3 multi-backward</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/roycho96">@roycho96</a> | 创建时间：2026-05-05
+                        </div>
+                        <div class="pr-desc">为 ZeRO 1/2/3 的多次 backward 场景提供 coalesce_grad_reduction() API，允许用户控制梯度归约的时机。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7978</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7978">Add Qwen 3.5 preset to AutoTP</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/tohtana">@tohtana</a> | 创建时间：2026-04-16
+                        </div>
+                        <div class="pr-desc">为 AutoTP 添加 Qwen 3.5 模型预设支持。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7939</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7939">feat(zero2): add CPU offload support for Muon optimizer</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/delock">@delock</a> | 创建时间：2026-03-31
+                        </div>
+                        <div class="pr-desc">为 ZeRO-2 下的 Muon 优化器添加 CPU offload 支持。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7938</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7938">Add AutoEP</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/tohtana">@tohtana</a> | 创建时间：2026-03-31
+                        </div>
+                        <div class="pr-desc">引入 AutoEP（自动专家并行）功能，简化 MoE 模型的分布式部署。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7929</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7929">Fix ZeRO-3 optimizer initialization validation (#7844)</a>
+                            <span class="status-badge status-approved">APPROVED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/amadhan882">@amadhan882</a> | 创建时间：2026-03-28
+                        </div>
+                        <div class="pr-desc">修复 ZeRO-3 优化器初始化验证逻辑。已通过审批，待合入。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7928</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7928">[Feature] Enable AutoEP Compatibility with ZeRO-3</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/nathon-lee">@nathon-lee</a> | 创建时间：2026-03-28
+                        </div>
+                        <div class="pr-desc">使 AutoEP 功能与 ZeRO-3 兼容，允许在 ZeRO-3 训练中使用自动专家并行。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number feature">PR #7917</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7917">Add torch_xla TPU support for ZeRO-1/2</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/PKUWZP">@PKUWZP</a> | 创建时间：2026-03-21
+                        </div>
+                        <div class="pr-desc">为 ZeRO-1/2 添加 torch_xla TPU 后端支持，扩展 DeepSpeed 的硬件适配范围。</div>
+                    </div>
+                </div>
+
+                <div class="category bugfix">
+                    <div class="category-title">🐛 Bug 修复（仍在 Review）</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number bugfix">PR #7990</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7990">fix gemma4 num attention head bugs</a>
+                            <span class="status-badge status-changes">CHANGES_REQUESTED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/delock">@delock</a> | 创建时间：2026-05-02
+                        </div>
+                        <div class="pr-desc">修复 Gemma4 模型 attention head 数量配置问题，需要修改后重新提交。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number bugfix">PR #7987</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7987">Fix eigenvalue monitor logging</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/heurry">@heurry</a> | 创建时间：2026-04-28
+                        </div>
+                        <div class="pr-desc">修复 eigenvalue monitor 日志记录问题。</div>
+                    </div>
+                </div>
+
+                <div class="category docs">
+                    <div class="category-title">📝 文档 / 博客</div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number docs">PR #7962</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7962">[Blog] Muon Optimizer Support in DeepSpeed</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/delock">@delock</a> | 创建时间：2026-04-08
+                        </div>
+                        <div class="pr-desc">关于 DeepSpeed 中 Muon 优化器支持的博客文章，仍在审核中。</div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <span class="pr-number docs">PR #7994</span>
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7994">fix: use subprocess instead of os.system in data_analyzer.py</a>
+                            <span class="status-badge status-review">REVIEW_REQUIRED</span>
+                        </div>
+                        <div class="pr-meta">
+                            作者：<a href="https://github.com/orbisai0security">@orbisai0security</a> | 创建时间：2026-05-06
+                        </div>
+                        <div class="pr-desc">安全改进：将 data_analyzer.py 中的 os.system 替换为 subprocess，避免命令注入风险。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 社区 Issue -->
+            <div class="section">
+                <div class="section-title">社区 Issue 动态</div>
+
+                <div class="issue-card">
+                    <div class="pr-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8003">#8003</a> [BUG] FastFileWriter leaks one fd per save, causing orphan inodes and filesystem ENOSPC
+                        <span class="issue-label label-bug">bug</span>
+                        <span class="issue-label label-training">training</span>
+                        <span class="issue-label label-closed">已关闭</span>
+                    </div>
+                    <div class="pr-meta">
+                        提交者：<a href="https://github.com/jg-heo">@jg-heo</a> | 创建时间：2026-05-11 | 状态：已通过 PR #8005 修复
+                    </div>
+                    <div class="pr-desc">
+                        FastFileWriter 每次 save 泄漏一个 fd，配合 checkpoint rotation 导致孤儿 inode 和 ENOSPC。此 issue 已在本周被及时修复并合入。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="pr-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8001">#8001</a> EvoformerAttention should auto-detect CUTLASS instead of requiring CUTLASS_PATH
+                        <span class="issue-label label-enhancement">enhancement</span>
+                    </div>
+                    <div class="pr-meta">
+                        提交者：<a href="https://github.com/MaxTretikov">@MaxTretikov</a> | 创建时间：2026-05-08 | 状态：Open（关联 PR #8000 已 Approved）
+                    </div>
+                    <div class="pr-desc">
+                        请求 EvoformerAttention 自动检测 CUTLASS 路径。对应 PR #8000 已通过审批，预计很快合入。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="pr-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/7998">#7998</a> [REQUEST] Will zero 3 support different module usage?
+                        <span class="issue-label label-enhancement">enhancement</span>
+                    </div>
+                    <div class="pr-meta">
+                        提交者：<a href="https://github.com/Creator404">@Creator404</a> | 创建时间：2026-05-07 | 状态：Open
+                    </div>
+                    <div class="pr-desc">
+                        社区用户请求 ZeRO-3 支持不同模块使用模式的灵活配置。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap / 方向 -->
+            <div class="section">
+                <div class="section-title">Roadmap 与发展方向</div>
+
+                <div class="roadmap-box">
+                    <h4>📍 v0.19.0 后的重点发展方向（从 Open PR 推断）</h4>
+                    <ul>
+                        <li><strong>AutoEP（自动专家并行）</strong>：PR #7938 + #7928 推动 AutoEP 与 ZeRO-3 的集成，简化 MoE 部署</li>
+                        <li><strong>Muon 优化器生态完善</strong>：CPU offload 支持 (#7939)、博客文档 (#7962)、gradient clipping 兼容 (#7776) 等持续推进</li>
+                        <li><strong>AMD GPU 加速</strong>：本周合入的 SDMA allgather (#7999) 标志着对 AMD MI300X 的深度优化开始落地</li>
+                        <li><strong>TPU 支持</strong>：PR #7917 正在为 ZeRO-1/2 添加 torch_xla TPU 后端</li>
+                        <li><strong>bf16 CPU offload 优化</strong>：PR #8010 探索更低内存占用的优化器状态存储</li>
+                        <li><strong>新模型支持</strong>：Qwen 3.5 AutoTP 预设 (#7978)、Gemma4 (#7990/#7975)、EXAONE 4.0 (#7456) 等</li>
+                    </ul>
+                    <p style="margin-top: 16px; font-size: 0.9em; color: #666;">
+                        注：本周无官方 Roadmap 文档更新或新 Release。v0.19.0 于 5 月 6 日发布后，社区目前处于活跃的功能迭代和 bug 修复阶段。
+                    </p>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link">← 返回周报列表</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>数据来源：<a href="https://github.com/deepspeedai/DeepSpeed" target="_blank">deepspeedai/DeepSpeed</a> | 报告周期：2026-05-12 ~ 2026-05-17</p>
+            <p style="margin-top: 8px; font-size: 0.85em;">自动生成于 2026-05-18</p>
+        </div>
+    </div>
+</body>
+</html>

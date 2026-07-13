@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSpeed Weekly Report - 2026-07-07 to 2026-07-12</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header .date-range {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .header .highlight-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        .header .roadmap-badge {
+            display: inline-block;
+            background: #ff6b35;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 12px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 1.6em;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .icon {
+            font-size: 1.2em;
+        }
+        .subsection {
+            margin-bottom: 24px;
+        }
+        .subsection-title {
+            font-size: 1.2em;
+            color: #2a5298;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .pr-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pr-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .pr-card .pr-title {
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 6px;
+        }
+        .pr-card .pr-title a {
+            color: #1e3c72;
+            text-decoration: none;
+        }
+        .pr-card .pr-title a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .pr-card .pr-meta {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        .pr-card .pr-meta .author {
+            color: #2a5298;
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge-feature { background: #d4edda; color: #155724; }
+        .badge-bugfix { background: #f8d7da; color: #721c24; }
+        .badge-docs { background: #cce5ff; color: #004085; }
+        .badge-perf { background: #fff3cd; color: #856404; }
+        .badge-security { background: #e2d5f1; color: #4a1d8e; }
+        .badge-infra { background: #d1ecf1; color: #0c5460; }
+        .badge-refactor { background: #e2e3e5; color: #383d41; }
+        .roadmap-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0e6 100%);
+            border: 2px solid #ff6b35;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .roadmap-section h3 {
+            color: #ff6b35;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+        .roadmap-item {
+            margin-bottom: 8px;
+            padding-left: 16px;
+            border-left: 3px solid #ff6b35;
+        }
+        .roadmap-item h4 {
+            color: #333;
+            font-size: 1em;
+        }
+        .roadmap-item p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .issue-card {
+            background: #fffbf0;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .issue-card .issue-title {
+            font-weight: 600;
+            color: #856404;
+        }
+        .issue-card .issue-title a {
+            color: #856404;
+            text-decoration: none;
+        }
+        .issue-card .issue-title a:hover {
+            color: #e09500;
+            text-decoration: underline;
+        }
+        .issue-card .issue-meta {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-item .number {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        .stat-item .label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .content { padding: 20px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DeepSpeed Weekly Report</h1>
+            <div class="date-range">2026-07-07 ~ 2026-07-12</div>
+            <span class="highlight-badge">12 PRs Merged</span>
+            <span class="roadmap-badge">Q3 Roadmap Active</span>
+        </div>
+
+        <div class="content">
+            <a href="index.html" class="back-link">&larr; 返回周报列表</a>
+
+            <!-- Stats Overview -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="number">12</div>
+                    <div class="label">Merged PRs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">11</div>
+                    <div class="label">Open PRs (Review)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">1</div>
+                    <div class="label">New Issues</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">1</div>
+                    <div class="label">Roadmap Update</div>
+                </div>
+            </div>
+
+            <!-- Merged PRs Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">✅</span> 本周合入的 PR</h2>
+
+                <!-- Features -->
+                <div class="subsection">
+                    <h3 class="subsection-title">重要特性 (Features)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8064">#8064</a> Add AutoEP + AutoTP parallel folding
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Merged: 2026-07-12
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            实现 AutoEP + AutoTP 的并行折叠，使 Expert Parallelism 与 Tensor Parallelism 能够组合使用，大幅提升 MoE 模型的分布式训练灵活性。这是 Q3 Roadmap 中 AutoEP 方向的重要进展。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8027">#8027</a> Add Hybrid Engine rollout in DeepSpeed to support On-Policy Distillation (OPSD) Trainer
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">PKUWZP</span> (Zhipeng Wang) | Merged: 2026-07-12
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            在 DeepSpeed 中新增 Hybrid Engine rollout 支持，为 On-Policy Distillation (OPSD) Trainer 提供系统基础。这是 Q3 Roadmap 中 OPSD Trainer 方向的关键里程碑。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8058">#8058</a> feat(zenflow): run the overlapped CPU optimizer in a native process
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">Antlera</span> | Merged: 2026-07-07
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            ZenFlow 优化：将重叠 CPU 优化器迁移到原生进程中运行，避免 Python GIL 竞争，提升 CPU offload 场景下的训练吞吐量。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8118">#8118</a> feat(types): add type hints to public comm API functions
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">NovusEdge</span> (Aliasgar Khimani) | Merged: 2026-07-11
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为 DeepSpeed 公共通信 API 函数添加完整类型提示，提升代码可读性和 IDE 智能补全支持。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8126">#8126</a> Add input validation for save_checkpoint and warmup LR schedulers
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">jahnavi-yelamanchi</span> | Merged: 2026-07-09
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为 save_checkpoint 和 warmup LR scheduler 增加输入验证，防止用户因配置错误导致训练异常。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bug Fixes -->
+                <div class="subsection">
+                    <h3 class="subsection-title">Bug 修复 (Bug Fixes)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8128">#8128</a> Fix ZeRO-3: use per-param dtype for quantize-scale buffer in _allgather_params_coalesced
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">roycho96</span> | Merged: 2026-07-11
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 ZeRO-3 中 _allgather_params_coalesced 使用全局 dtype 而非 per-param dtype 分配量化 scale buffer 的问题，消除混合精度训练中的数值错误。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8113">#8113</a> Fix ZeRO-3 autocast gather with mixed parameter dtypes
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Merged: 2026-07-11
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 ZeRO-3 在混合参数数据类型场景下 autocast gather 的正确性问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8122">#8122</a> Fix FlopsProfiler crash when dp_world_size is None under sequence parallelism
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> (Vineeth Sai) | Merged: 2026-07-07
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复序列并行模式下 dp_world_size 为 None 时 FlopsProfiler 崩溃的问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8119">#8119</a> Fix Python 3.9 import-time TypeError in AutoEP ep_router
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> (Vineeth Sai) | Merged: 2026-07-07
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 AutoEP ep_router 在 Python 3.9 下导入时因使用 <code>type | None</code> 语法导致的 TypeError 兼容性问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8082">#8082</a> fix: add buffer-length check in shm.cpp
+                            <span class="badge badge-security">Security</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">orbisai0security</span> | Merged: 2026-07-07
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            在共享内存通信模块 shm.cpp 中增加 buffer 长度检查，防止潜在的缓冲区溢出安全风险。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Docs & Infra -->
+                <div class="subsection">
+                    <h3 class="subsection-title">文档 & 基础设施 (Docs & Infra)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/7899">#7899</a> doc: Remove suggestion to build extensions in parallel
+                            <span class="badge badge-docs">Docs</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">Flamefire</span> | Merged: 2026-07-11
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            移除文档中关于并行构建扩展的过时建议，避免用户因此遇到编译问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8110">#8110</a> Make DCO workflow Probot compatible
+                            <span class="badge badge-infra">Infra</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Merged: 2026-07-12
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            使 DCO（Developer Certificate of Origin）工作流与 Probot 兼容，优化贡献者签名检查流程。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open PRs in Review -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">🔍</span> 本周新提交待 Review 的 PR</h2>
+                <p style="color:#666;margin-bottom:16px;font-size:0.9em;">以下 PR 在本周（7月7日–7月12日）期间提交并等待 review：</p>
+
+                <!-- Features in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">重要特性 (Features)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8135">#8135</a> Feature/zero multi loss separate backward
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">nathon-lee</span> | Created: 2026-07-12 | Status: Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            ZeRO 支持多 loss 场景下的独立反向传播，适用于多任务训练和 RLHF 等复杂训练范式。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8129">#8129</a> Make DeepCompile ZeRO-3 scheduling memory-aware
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Created: 2026-07-10 | Status: Draft / Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            使 DeepCompile 的 ZeRO-3 调度具备内存感知能力，根据显存状态动态调整预取和释放策略。这是 Q3 Roadmap 中 DeepCompile 增强的重要一环。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8130">#8130</a> ZeRO-3: don't partition frozen params during an activation-checkpoint recompute
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">qgallouedec</span> (Quentin Gallouedec) | Created: 2026-07-10 | Status: Changes Requested
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            在 activation checkpoint 重计算期间不对冻结参数执行分区操作，减少不必要的通信开销。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bugfix in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">Bug 修复 (Bug Fixes)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8137">#8137</a> Fix CommsLogger.stop_profiling_comms not disabling global profiling
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> (Vineeth Sai) | Created: 2026-07-12 | Status: Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 CommsLogger.stop_profiling_comms 未正确禁用全局性能分析的问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8136">#8136</a> fix(exceptions): narrow broad Exception clauses to specific types
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sowndappan5</span> (Sowndappan S) | Created: 2026-07-12 | Status: Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            将代码中过于宽泛的 Exception 捕获缩窄为具体异常类型，提升错误处理的精确性。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8133">#8133</a> fix: add zero-guards for divisor/scale edge cases (#7838)
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">liuyun7345</span> | Created: 2026-07-12 | Status: Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为除法和 scale 计算的边界情况添加零值保护，修复 Issue #7838 中报告的 ZeroDivisionError。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8125">#8125</a> fix(autotp): when using autotp, ignore the consistency of certain data within the tp_group
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">1787648106</span> (Lun Zhongwang) | Created: 2026-07-07 | Status: Changes Requested
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            在使用 AutoTP 时忽略 tp_group 内某些数据的一致性检查，避免特定场景下的错误中断。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Docs in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">文档 & 基础设施 (Docs & Infra)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8134">#8134</a> Tidy docs style in DeepSpeed (#8076)
+                            <span class="badge badge-docs">Docs</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">bglglzd</span> | Created: 2026-07-12 | Status: Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            统一整理 DeepSpeed 文档样式，提升文档一致性和可读性。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8131">#8131</a> docs: add community health files (CHANGELOG.md)
+                            <span class="badge badge-docs">Docs</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">Mukller</span> (Anton Petnitsky) | Created: 2026-07-11 | Status: Review Required
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            添加社区健康文件 CHANGELOG.md，开始追踪版本变更历史。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">性能优化 (Performance)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8115">#8115</a> Reduce blockDim in fake_quantize_kernel for improved SM occupancy
+                            <span class="badge badge-perf">Perf</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">flutist</span> (flutist-alibaba) | Created: 2026-07-02 | Status: Approved
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            降低 fake_quantize_kernel 的 blockDim 以提升 SM 占用率，优化量化内核性能。已获批准，等待合入。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issues Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">📋</span> 社区 Issue 动态</h2>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8123">#8123</a> [Proposal] HeartFlow - Cognitive Engine for DeepSpeed
+                    </div>
+                    <div class="issue-meta">
+                        Author: yun520-1 | Created: 2026-07-06 | Status: Closed
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        社区提案：为 DeepSpeed 增加名为 HeartFlow 的认知引擎。该提案已被关闭。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8084">#8084</a> zero.Init silently does not shard (world_size=1) when the process group is uninitialized
+                    </div>
+                    <div class="issue-meta">
+                        Author: trevorgordon981 | Created: 2026-06-22 | Status: Open
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        当进程组未初始化时，zero.Init 静默回退到 world_size=1 不进行分片，导致 from_pretrained 加载时每个 rank 都完整加载模型触发 OOM。已有对应 PR #8089 跟进。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8093">#8093</a> Exception type too broad in error handling
+                    </div>
+                    <div class="issue-meta">
+                        Author: goransh-buh | Created: 2026-06-26 | Status: Open
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        代码中异常捕获类型过于宽泛的问题。已有对应 PR #8136 正在 review。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/7838">#7838</a> [BUG] Multiple missing zero-guards cause ZeroDivisionError
+                    </div>
+                    <div class="issue-meta">
+                        Author: thehalleyyoung | Created: 2026-02-09 | Status: Open
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        DeepSpeed 4处代码缺少零值保护导致 ZeroDivisionError 或非有限值。本周有对应修复 PR #8133 提交。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">🗺️</span> Roadmap 更新</h2>
+
+                <div class="roadmap-section">
+                    <h3>DeepSpeed Q3 2026 Roadmap（持续更新中）</h3>
+                    <p style="margin-bottom:16px;color:#666;">
+                        Q3 Roadmap（<a href="https://github.com/deepspeedai/DeepSpeed/issues/8104" style="color:#ff6b35;">Issue #8104</a>）最后更新于 7月13日。
+                        本周有两项 Roadmap 相关重要进展合入主线：
+                    </p>
+
+                    <div class="roadmap-item">
+                        <h4>AutoEP + AutoTP Parallel Folding 合入 ✅</h4>
+                        <p>PR #8064 合入，实现了 AutoEP 与 AutoTP 的组合并行，是 Roadmap 中"统一 EP 支持"方向的关键里程碑。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>On-Policy Distillation (OPSD) Trainer 基础合入 ✅</h4>
+                        <p>PR #8027 合入，为 OPSD Trainer 提供 Hybrid Engine rollout 支持，完成了系统设计和原型阶段。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>DeepCompile Memory-Aware Scheduling 开发中 🚧</h4>
+                        <p>PR #8129（Draft）正在开发，使 ZeRO-3 调度具备内存感知能力，属于 Roadmap 中 "DeepCompile 效率提升" 方向。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>其他 Roadmap 条目状态</h4>
+                        <p>TPU 支持、Ray Pipeline 并行、Tuning Guide、Stability 等方向本周无新进展公开。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary & Highlights -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">💡</span> 本周亮点总结</h2>
+                <div style="background:#f0f7ff;border-radius:12px;padding:20px;border:1px solid #cce5ff;">
+                    <ul style="list-style:none;padding:0;">
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🔥</span>
+                            <strong>AutoEP + AutoTP 并行折叠合入</strong> — tohtana 的 #8064 实现了 Expert Parallelism 与 Tensor Parallelism 的组合，是 Q3 Roadmap AutoEP 方向的里程碑。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">⚡</span>
+                            <strong>OPSD Trainer 原型落地</strong> — PKUWZP 的 #8027 为 On-Policy Distillation Trainer 提供了 Hybrid Engine 基础，标志着 Q3 Roadmap 此项进入实施阶段。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🧠</span>
+                            <strong>DeepCompile 内存感知调度开发中</strong> — #8129（Draft）正在实现 ZeRO-3 内存感知调度，预计将显著减少 OOM 风险。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🛡️</span>
+                            <strong>安全修复：共享内存缓冲区检查</strong> — #8082 为 shm.cpp 增加 buffer 长度校验，消除潜在溢出风险。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🔧</span>
+                            <strong>ZeRO-3 连续 Bugfix</strong> — 本周 3 个 ZeRO-3 相关修复合入（#8128、#8113、#8122），持续打磨混合精度和序列并行的稳定性。
+                        </li>
+                        <li style="padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🌍</span>
+                            <strong>社区贡献活跃</strong> — 本周有来自阿里巴巴（flutist-alibaba 量化优化）、HuggingFace（qgallouedec ZeRO-3 优化）等多方社区贡献。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated on 2026-07-13 | Data source: <a href="https://github.com/deepspeedai/DeepSpeed" target="_blank">deepspeedai/DeepSpeed</a></p>
+            <p style="margin-top:4px;"><a href="index.html">← 返回周报列表</a></p>
+        </div>
+    </div>
+</body>
+</html>

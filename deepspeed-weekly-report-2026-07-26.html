@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSpeed Weekly Report - 2026-07-20 to 2026-07-26</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header .date-range {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .header .highlight-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        .header .roadmap-badge {
+            display: inline-block;
+            background: #ff6b35;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 12px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 1.6em;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .icon {
+            font-size: 1.2em;
+        }
+        .subsection {
+            margin-bottom: 24px;
+        }
+        .subsection-title {
+            font-size: 1.2em;
+            color: #2a5298;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .pr-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pr-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .pr-card .pr-title {
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 6px;
+        }
+        .pr-card .pr-title a {
+            color: #1e3c72;
+            text-decoration: none;
+        }
+        .pr-card .pr-title a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .pr-card .pr-meta {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        .pr-card .pr-meta .author {
+            color: #2a5298;
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge-feature { background: #d4edda; color: #155724; }
+        .badge-bugfix { background: #f8d7da; color: #721c24; }
+        .badge-docs { background: #cce5ff; color: #004085; }
+        .badge-perf { background: #fff3cd; color: #856404; }
+        .badge-security { background: #e2d5f1; color: #4a1d8e; }
+        .badge-infra { background: #d1ecf1; color: #0c5460; }
+        .badge-refactor { background: #e2e3e5; color: #383d41; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-changes { background: #f8d7da; color: #721c24; }
+        .badge-review { background: #fff3cd; color: #856404; }
+        .badge-draft { background: #e2e3e5; color: #383d41; }
+        .roadmap-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0e6 100%);
+            border: 2px solid #ff6b35;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .roadmap-section h3 {
+            color: #ff6b35;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+        .roadmap-item {
+            margin-bottom: 12px;
+            padding-left: 16px;
+            border-left: 3px solid #ff6b35;
+        }
+        .roadmap-item h4 {
+            color: #333;
+            font-size: 1em;
+        }
+        .roadmap-item p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .issue-card {
+            background: #fffbf0;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .issue-card .issue-title {
+            font-weight: 600;
+            color: #856404;
+        }
+        .issue-card .issue-title a {
+            color: #856404;
+            text-decoration: none;
+        }
+        .issue-card .issue-title a:hover {
+            color: #e09500;
+            text-decoration: underline;
+        }
+        .issue-card .issue-meta {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-item .number {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        .stat-item .label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .content { padding: 20px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DeepSpeed Weekly Report</h1>
+            <div class="date-range">2026-07-20 ~ 2026-07-26</div>
+            <span class="highlight-badge">9 PRs Merged</span>
+            <span class="roadmap-badge">Q3 Roadmap Active</span>
+        </div>
+
+        <div class="content">
+            <a href="index.html" class="back-link">&larr; 返回周报列表</a>
+
+            <!-- Stats Overview -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="number">9</div>
+                    <div class="label">Merged PRs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">10</div>
+                    <div class="label">Open PRs (Review)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">3</div>
+                    <div class="label">New Issues</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">1</div>
+                    <div class="label">Roadmap Update</div>
+                </div>
+            </div>
+
+            <!-- Merged PRs Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">✅</span> 本周合入的 PR</h2>
+
+                <!-- Features -->
+                <div class="subsection">
+                    <h3 class="subsection-title">重要特性 (Features)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8167">#8167</a> [AutoTP] Allow ZeRO stage 3 inference with tensor parallelism
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">delock</span> | Merged: 2026-07-25
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            放开 AutoTP 与 ZeRO-3 组合的限制：仅当存在优化器（训练场景）时才阻止 AutoTP + ZeRO-3，从而允许 ZeRO-Inference 推理路径（无优化器）与张量并行同时使用。这是 Q3 Roadmap 中 "统一 EP / AutoTP" 方向的实用增强。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8148">#8148</a> Z3: Support for activation ckpt with frozen params
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> (Olatunji Ruwase) | Merged: 2026-07-22
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            在 ZeRO-3 下支持 activation checkpoint 与冻结参数（frozen params）共存，避免重计算期间对冻结参数做不必要的分区，是 #8130 工作的延续，利于 PEFT / LoRA 等部分冻结训练场景。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8174">#8174</a> Enable support for Tutel when k != 1 for shared moe
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">jinyouzhi</span> | Merged: 2026-07-26
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            移除 shared MoE 中对 Tutel top-1（k==1）的限制，支持 top-2 及 topk&gt;2 的场景，延续 #6948，扩展 MoE 训练的路由灵活性。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bug Fixes -->
+                <div class="subsection">
+                    <h3 class="subsection-title">Bug 修复 (Bug Fixes)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8154">#8154</a> Fix repeated gradient scaling across pipeline stages
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">Functionhx</span> | Merged: 2026-07-20 | Fixes #8152
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复流水线并行 + 梯度累积场景下梯度被重复缩放的问题：此前每个 pipeline stage 都会按 gradient_accumulation_steps 缩放梯度，导致前面的 stage 对已缩放梯度再次缩放。改为仅在最后一个 stage 应用缩放，修复 Issue #8152。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8144">#8144</a> Fix ZeRO-3 hooks for attribute-delegating modules
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">Functionhx</span> | Merged: 2026-07-20
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 ZeRO-3 对属性委托模块（如 PEFT 的 ModulesToSaveWrapper）注册 backward hook 的问题：将 hook 状态检查改为实例本地，避免 wrapper 误用子模块的 hook 类而跳过创建自身闭包，附带两步训练的回归测试。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8177">#8177</a> Fix autotuning get_val_by_key to search all nested subdicts
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">ebarkhordar</span> | Merged: 2026-07-26 | Fixes #8176
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 autotuning 的 get_val_by_key 只递归第一个 dict 子项就无条件返回、导致同级其他子字典中的键被漏查的问题，使其与 set_val_by_key 行为对称。修复 Issue #8176。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8151">#8151</a> Validate warmup_type in WarmupCosineLR like WarmupLR
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sohumt123</span> | Merged: 2026-07-23
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为 WarmupCosineLR 增加 warmup_type 校验（对齐 WarmupLR 行为）：非法值（如 'Linear'、'cosine' 拼写错误）此前会在首次 step() 时抛 UnboundLocalError，现改为校验并回退到 log 并告警。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Docs & Infra -->
+                <div class="subsection">
+                    <h3 class="subsection-title">文档 & 基础设施 (Docs &amp; Infra)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8170">#8170</a> Run pull request code only inside a Modal Sandbox
+                            <span class="badge badge-infra">Infra</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Merged: 2026-07-24
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            应对 GitHub 在 actions/checkout v7（并回移至 v4）默认拒绝 fork PR checkout 的安全变更：将 fork PR 代码改为仅在 Modal Sandbox 隔离环境中执行，在不牺牲安全性的前提下恢复 CI 对 fork PR 的测试能力。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8165">#8165</a> Adopt PTF Code of Conduct
+                            <span class="badge badge-docs">Docs</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> (Olatunji Ruwase) | Merged: 2026-07-23
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            采用 PyTorch Foundation (PTF) 行为准则，作为 DeepSpeed 迁入 PyTorch Foundation 治理体系的社区健康文件更新。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open PRs in Review -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">🔍</span> 本周新提交待 Review 的 PR</h2>
+                <p style="color:#666;margin-bottom:16px;font-size:0.9em;">以下 PR 在本周（7月20日–7月26日）期间提交并等待 review：</p>
+
+                <!-- Features in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">重要特性 (Features)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8161">#8161</a> [Pipeline] Add Ray-backed stage placement and execution with pluggable transports
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">SisPiao</span> | Created: 2026-07-21
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            基于 Q3 Roadmap 的 "Ray 流水线并行" 方向，实现 Ray actor 组驱动的流水线 stage 放置与执行，支持可插拔传输后端，从而在流水线各 stage 间实现异构资源分配。对应 Issue #8160。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8180">#8180</a> Add Triton grouped-GEMM for MoE experts on Ampere/Ada
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">hwchen2017</span> | Created: 2026-07-26
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为 AutoEP 专家计算添加 Triton grouped-GEMM 内核：torch._grouped_mm 仅在 Hopper(sm90) 有融合内核，在 Ampere/Ada（A100/A6000/RTX 30xx）会回退到逐组 Python 循环并触发 device→host 同步，严重拖慢 MoE。此 PR 提供 Triton 实现以覆盖旧架构，属 Roadmap "统一 EP 内核" 方向。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8169">#8169</a> Stabilize DeepCompile ZeRO-3 memory scheduling
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-draft">Draft</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Created: 2026-07-23 | Depends on #8159
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为 DeepCompile 的 ZeRO-3 调度增加 rank 一致的内存预算与诊断，协调 prefetch、选择性 gather 与原生 gather-buffer 复用，避免保留多余显存或在 Dynamo guard 评估期触发全量参数 gather。对应 Roadmap "DeepCompile 效率与鲁棒性" 方向。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8168">#8168</a> [AutoTP] Fix ZeRO-3 checkpoint consolidation to gather across TP and DP
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-draft">Draft</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">delock</span> | Created: 2026-07-23
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 AutoTP + ZeRO-3 静默生成不完整 checkpoint 的问题：此前导出仅处理 ZeRO 数据并行维度、丢弃张量并行分片。改为在 ds_to_universal.py 与 engine.py 中跨 TP 和 DP 一并 gather，是 #8167 的后续 checkpoint 支持工作。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bugfix in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">Bug 修复 (Bug Fixes)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8171">#8171</a> Fix WarmupLR collapsing multi-group base LRs to group 0's
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-approved">Approved</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">ebarkhordar</span> | Created: 2026-07-24
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复未指定 warmup_max_lr 时 WarmupLR 把多个参数组的 base LR 统一坍缩为 group 0 值的问题（多 param group 优化器下会丢失分组学习率）。已获批准，等待合入。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8166">#8166</a> Guard LRRangeTest and OneCycle schedulers against zero step sizes
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">ebarkhordar</span> | Created: 2026-07-23
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            为 LRRangeTest 与 OneCycle 调度器的用户配置 step size 增加校验，避免 step_size=0 时首次 step() 抛出裸 ZeroDivisionError，改为清晰的配置错误提示。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8162">#8162</a> fix: avoid ZeroDivisionError in compute_elastic_config return_microbatch path
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">Solaris-star</span> | Created: 2026-07-21
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复弹性训练 compute_elastic_config 的 return_microbatch 路径中的 ZeroDivisionError 边界问题。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8179">#8179</a> Make the OneCycle stair counts actually change the schedule
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-changes">Changes Requested</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> (Vineeth Sai) | Created: 2026-07-26
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 1Cycle 调度中 cycle_first_stair_count / cycle_second_stair_count 实际不生效（无论取值学习率曲线都相同）的问题，这两个参数在教程与 CLI 中均有文档说明。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8178">#8178</a> Make PipelineModule.set_checkpoint_interval actually change the interval
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-changes">Changes Requested</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> (Vineeth Sai) | Created: 2026-07-25
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 PipelineModule.set_checkpoint_interval 设置的是 checkpoint_interval 而所有读取方使用 activation_checkpoint_interval，导致该接口实际不改变激活检查点间隔的问题。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test / Infra in Review -->
+                <div class="subsection">
+                    <h3 class="subsection-title">测试 & 基础设施 (Test &amp; Infra)</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8172">#8172</a> Stabilize fork-sensitive nightly tests and AutoSP coverage
+                            <span class="badge badge-infra">Infra</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Created: 2026-07-24
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            稳定 nightly full test：将 fork 敏感的重型双卡 NVMe / CPU-only FlopsProfiler 测试移到非 fork 顺序阶段，并扩展 AutoSP（TestSDPANodesCompile）对多张 FX 图的覆盖。对应 Roadmap "Stability - 启用 nightly full test" 方向。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issues Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">📋</span> 社区 Issue 动态</h2>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8173">#8173</a> [RFC] Support sharding LM heads and adopting Online Softmax
+                    </div>
+                    <div class="issue-meta">
+                        Author: jinyouzhi | Created: 2026-07-24 | Status: Open
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        RFC 提案：通过集成 Liger Kernel 扩展 AutoTP 能力，支持 LM head 分片（ColumnParallelLinear 的 gather_output=False）与 Online Softmax，可显著节省显存，尤其利于 OPSD teacher 的 TP 分片。直接对应 Roadmap 中 "集成 Liger Kernel" 条目（#8104）。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8176">#8176</a> [BUG] autotuning get_val_by_key stops at the first nested subdict
+                    </div>
+                    <div class="issue-meta">
+                        Author: ebarkhordar | Created: 2026-07-25 | Status: Closed
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        autotuning 的 get_val_by_key 递归到第一个 dict 子项就无条件返回，导致同级其他子字典中的键被漏查，与 set_val_by_key 行为不一致。已由本周 PR #8177 修复并关闭。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8160">#8160</a> [Pipeline] Add Ray-backed stage placement and execution with pluggable transports
+                    </div>
+                    <div class="issue-meta">
+                        Author: SisPiao | Created: 2026-07-21 | Status: Closed
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        围绕 Roadmap 的异构资源流水线并行方向提出的实现说明，已转化为对应的 PR #8161（当前 review 中），Issue 本身已关闭。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8152">#8152</a> [BUG] Gradient accumulation scaling is applied repeatedly across pipeline stages
+                    </div>
+                    <div class="issue-meta">
+                        Author: solesie | Created: 2026-07-17 | Status: Closed
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:6px;">
+                        流水线并行 + gradient_accumulation_steps&gt;1 时梯度累积缩放在每个 stage 边界被重复应用（上周提出，本周处理）。已由 PR #8154 修复并关闭。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">🗺️</span> Roadmap 更新</h2>
+
+                <div class="roadmap-section">
+                    <h3>DeepSpeed Q3 2026 Roadmap（持续更新中）</h3>
+                    <p style="margin-bottom:16px;color:#666;">
+                        Q3 Roadmap（<a href="https://github.com/deepspeedai/DeepSpeed/issues/8104" style="color:#ff6b35;">Issue #8104</a>）最后更新于 7月26日。本周多项工作与 Roadmap 方向直接对应，进展集中在 Ray 流水线、统一 EP 内核、DeepCompile 与 Stability：
+                    </p>
+
+                    <div class="roadmap-item">
+                        <h4>Ray 流水线并行 —— 原型 PR 提交 🚧</h4>
+                        <p>#8161（review 中）实现 Ray actor 组驱动的 stage 放置与可插拔传输，对应 "Ray-backed pipeline stage placement and execution" 条目，迈出异构资源分配的第一步。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>统一 EP 内核 —— Ampere/Ada grouped-GEMM 🚧</h4>
+                        <p>#8180（review 中）为 Ampere/Ada 架构补齐 MoE 专家的 Triton grouped-GEMM 内核，对应 "Unified EP Kernels" 方向，解决旧架构上的性能回退。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>AutoTP + Liger Kernel —— RFC 立项 💡</h4>
+                        <p>RFC #8173 提出集成 Liger Kernel 支持 LM head 分片与 Online Softmax，直接对应 Roadmap "Extend AutoTP capabilities by integrating Liger Kernel"；本周 #8167（AutoTP + ZeRO-3 推理）已先行合入。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>DeepCompile 效率与鲁棒性 —— 开发中 🚧</h4>
+                        <p>#8169（Draft）为 DeepCompile 的 ZeRO-3 调度增加内存感知预算与诊断，对应 "Enhance optimization passes" 方向。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>Stability —— nightly full test 稳定化 🚧</h4>
+                        <p>#8172（review 中）修复 fork 敏感的 nightly 测试并扩展 AutoSP 覆盖，对应 Roadmap "Enable nightly full test" 条目。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>其他 Roadmap 条目状态</h4>
+                        <p>TPU / 新加速器支持、Tuning Guide、性能回归测试等方向本周无新进展公开。On-Policy Distillation Trainer 的系统设计与原型阶段已在 Roadmap 标记完成。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary & Highlights -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">💡</span> 本周亮点总结</h2>
+                <div style="background:#f0f7ff;border-radius:12px;padding:20px;border:1px solid #cce5ff;">
+                    <ul style="list-style:none;padding:0;">
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🚀</span>
+                            <strong>AutoTP + ZeRO-3 推理解锁</strong> — delock 的 #8167 放开了 AutoTP 与 ZeRO-3 组合限制，允许 ZeRO-Inference 推理路径叠加张量并行，是统一 EP / AutoTP 方向的实用增强。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🧊</span>
+                            <strong>ZeRO-3 冻结参数 + 激活检查点</strong> — #8148 支持在 ZeRO-3 下将 activation checkpoint 与冻结参数共存，改善 PEFT/LoRA 等部分冻结训练体验。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🔧</span>
+                            <strong>流水线梯度缩放 Bug 修复</strong> — Functionhx 的 #8154 修复了流水线并行 + 梯度累积下梯度被逐 stage 重复缩放的问题（Issue #8152），影响正确性，值得关注。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🛤️</span>
+                            <strong>Ray 流水线并行原型登场</strong> — #8161 落地 Roadmap 的 Ray-backed 流水线 stage 放置，开启异构资源分配探索。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">⚡</span>
+                            <strong>MoE 内核补齐旧架构</strong> — #8180 为 Ampere/Ada 提供 Triton grouped-GEMM，解决 AutoEP 在非 Hopper GPU 上的性能回退。
+                        </li>
+                        <li style="padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🧹</span>
+                            <strong>LR 调度器一波纠错</strong> — 本周多个学习率调度器修复扎堆提交（#8151 已合入，#8166/#8171/#8178/#8179 review 中），集中修正 WarmupCosine/WarmupLR/OneCycle/LRRangeTest 的校验与生效问题。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated on 2026-07-27 | Data source: <a href="https://github.com/deepspeedai/DeepSpeed" target="_blank">deepspeedai/DeepSpeed</a></p>
+            <p style="margin-top:4px;"><a href="index.html">← 返回周报列表</a></p>
+        </div>
+    </div>
+</body>
+</html>

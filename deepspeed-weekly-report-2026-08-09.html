@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSpeed Weekly Report - 2026-08-03 to 2026-08-09</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header .date-range {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .header .highlight-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        .header .roadmap-badge {
+            display: inline-block;
+            background: #ff6b35;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 12px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 1.6em;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .icon {
+            font-size: 1.2em;
+        }
+        .subsection {
+            margin-bottom: 24px;
+        }
+        .subsection-title {
+            font-size: 1.2em;
+            color: #2a5298;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .pr-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pr-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .pr-card .pr-title {
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 6px;
+        }
+        .pr-card .pr-title a {
+            color: #1e3c72;
+            text-decoration: none;
+        }
+        .pr-card .pr-title a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .pr-card .pr-meta {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        .pr-card .pr-meta .author {
+            color: #2a5298;
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge-feature { background: #d4edda; color: #155724; }
+        .badge-bugfix { background: #f8d7da; color: #721c24; }
+        .badge-docs { background: #cce5ff; color: #004085; }
+        .badge-perf { background: #fff3cd; color: #856404; }
+        .badge-security { background: #e2d5f1; color: #4a1d8e; }
+        .badge-infra { background: #d1ecf1; color: #0c5460; }
+        .badge-refactor { background: #e2e3e5; color: #383d41; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-changes { background: #f8d7da; color: #721c24; }
+        .badge-review { background: #fff3cd; color: #856404; }
+        .badge-draft { background: #e2e3e5; color: #383d41; }
+        .roadmap-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0e6 100%);
+            border: 2px solid #ff6b35;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .roadmap-section h3 {
+            color: #ff6b35;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+        .roadmap-item {
+            margin-bottom: 12px;
+            padding-left: 16px;
+            border-left: 3px solid #ff6b35;
+        }
+        .roadmap-item h4 {
+            color: #333;
+            font-size: 1em;
+        }
+        .roadmap-item p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .issue-card {
+            background: #fffbf0;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .issue-card .issue-title {
+            font-weight: 600;
+            color: #856404;
+        }
+        .issue-card .issue-title a {
+            color: #856404;
+            text-decoration: none;
+        }
+        .issue-card .issue-title a:hover {
+            color: #e09500;
+            text-decoration: underline;
+        }
+        .issue-card .issue-meta {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-item .number {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        .stat-item .label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .content { padding: 20px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DeepSpeed Weekly Report</h1>
+            <div class="date-range">2026-08-03 ~ 2026-08-09</div>
+            <span class="highlight-badge">25 PRs Merged</span>
+            <span class="roadmap-badge">v0.19.4 Released</span>
+        </div>
+
+        <div class="content">
+            <a href="index.html" class="back-link">&larr; 返回周报列表</a>
+
+            <!-- Stats Overview -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="number">25</div>
+                    <div class="label">Merged PRs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">15</div>
+                    <div class="label">New Open PRs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">4</div>
+                    <div class="label">New Issues</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">1</div>
+                    <div class="label">Release (v0.19.4)</div>
+                </div>
+            </div>
+
+            <div style="background:#eef7ee;border:1px solid #c3e6cb;border-radius:12px;padding:18px 20px;margin-bottom:30px;">
+                <strong style="color:#155724;">📌 本周一句话总结</strong>
+                <p style="margin-top:8px;font-size:0.95em;color:#2c4a30;">
+                    本周是<strong>「大特性收尾 + 静默正确性问题清扫」</strong>的一周：<a href="https://github.com/deepspeedai/DeepSpeed/releases/tag/v0.19.4">v0.19.4 补丁版本发布</a>（8/6，约 41 个 PR、7 位新贡献者）；
+                    <strong>非托管梯度累积</strong>（<code>managed_gradient_accumulation=false</code>）在三天内从 ZeRO-2 一路铺到 ZeRO-3 与 CPU/NVMe offload，面向 RL / Tinker 协议后端的能力基本闭环；
+                    <strong>DeepNVMe 的 host pinning 被拆成独立 <code>pin_memory</code> op</strong>，从此不再依赖 libaio；
+                    MoE/AutoEP 侧拿到 <strong>Ampere/Ada 的 Triton grouped-GEMM</strong>；同时合入了 4 个会静默算错结果的严重 bug 修复。
+                </p>
+            </div>
+
+            <!-- Merged PRs Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">✅</span> 本周合入的 PR（25 个）</h2>
+
+                <!-- Features -->
+                <div class="subsection">
+                    <h3 class="subsection-title">一、重要特性 &amp; 性能优化（Features / Perf，9 个）</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8180">#8180</a> Add Triton grouped-GEMM for MoE experts on Ampere/Ada
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-perf">Perf</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">hwchen2017</span> | Merged: 2026-08-03 | +1076/-10 (10 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <strong>本周最有分量的性能特性。</strong>AutoEP 的专家计算走 <code>torch._grouped_mm</code>，而它只在 Hopper (sm90+) 上有融合 kernel；在 Ampere/Ada（A100/A6000/A40/RTX 30xx，sm80/86）上会静默退化成逐专家的 Python 循环（<code>_grouped_mm_fallback</code>），每个专家一次 <code>at::mm</code> 外加一次 <code>offs</code> 的 device→host 同步。新增 <code>deepspeed/moe/group_gemm_triton.py</code>：一个 autograd-aware 的 Triton grouped GEMM，可直接替换 <code>torch._grouped_mm</code>（2D×3D + <code>offs</code>），在 sm&lt;9.0 上自动启用（sm90+ 仍走 native），并支持 fp16/bf16/fp32 的前反向；tile→group 映射在 device 侧算出，彻底消除 device→host 同步；<code>trans_b</code> 让专家权重以原生 <code>[E,N,K]</code> 布局传入、靠 stride 转置，反向直接产出原生布局的权重梯度，省掉一次 contiguous 拷贝。可用 <code>DS_DISABLE_TRITON_GROUPED_MM=1</code> 关闭。
+                            <br><strong>实测（dim=2048, hidden=768, bf16, 不均衡分布）：</strong>32 experts / 1848 tokens 下 forward 0.213ms vs Torch 0.755ms vs for-loop 1.603ms；前反向 0.622ms vs 2.222ms vs 22.732ms，<strong>最高约 3.5×（对 Torch）/ 36×（对 for-loop）</strong>。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8203">#8203</a> Unmanaged gradient accumulation: ZeRO stage 2 support
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> (Olatunji Ruwase) | Merged: 2026-08-05 | 承接 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8184">#8184</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            把上周落地的「非托管梯度累积」（<code>managed_gradient_accumulation=false</code>）扩展到 <strong>ZeRO stage 2</strong>。与 stage 0/1（backward 只本地累积、step 才 reduce）不同，stage 2 必须<strong>每次 backward 都 reduce/partition</strong> 才能保住显存特性——这与非托管模式并不冲突，因为 reduce-scatter 是线性的：把 N 次调用方控制的 backward 的已 reduce 分片累加，等价于在边界处 reduce 一次。micro-step 计数保持关闭，边界仍由调用方掌控，只把 <code>averaged_gradients</code> 的收尾推迟到 <code>step()</code>（新增 <code>finalize_gradient_accumulation_boundary()</code>）。
+                            <strong>额外收益：stage 2 现在支持 <code>overlap_comm</code></strong>（异步 reduce 被限制在 per-backward 路径内，收尾前同步），stage 0/1 仍拒绝。验证：2-GPU 全量 <code>-k Unmanaged</code> 22 passed。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8217">#8217</a> Unmanaged gradient accumulation: ZeRO stage 3 support
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> | Merged: 2026-08-05 | 叠加在 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8203">#8203</a> 之上
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            继续推到 <strong>ZeRO stage 3（非 offload）</strong>。stage 3 与托管模式一致，每次 <code>backward()</code> 都把梯度分区进 <code>__param_id_to_grad_partition</code>；<code>step()</code> 只负责通过 <code>finalize_gradient_accumulation_boundary()</code> 标记边界。由于 stage 3 解禁，原先藏在 stage-3 守卫后面不可达的 <strong>ZeRO 参数 offload</strong> 转为显式拒绝。验证：<code>-k Unmanaged</code> 29 passed，ZeRO-3 核心回归 158 passed / 62 skipped。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8225">#8225</a> Unmanaged gradient accumulation: ZeRO offload support
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> | Merged: 2026-08-09 | +369/-98 (11 files) | 承接 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8217">#8217</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            系列收尾：扩展到 <strong>ZeRO 优化器状态与参数 offload（CPU/NVMe）</strong>。stage 2/3 仍每次 backward 做 reduce/partition，<code>step()</code> 收尾被推迟的 offload 边界工作（梯度范数 + FP32/NVMe 拷贝）；stage 1 继续在 <code>step()</code> 通过 <code>allreduce_gradients()</code> reduce。<strong>至此非托管梯度累积覆盖 ZeRO 0/1/2/3 + offload 全栈</strong>，仅流水线并行、DeepCompile、Apex AMP 与 stage-0/1 的 <code>overlap_comm</code> 仍不支持。验证：<code>-k Unmanaged</code> 31 passed（含 <code>test_unmanaged_matches_managed_optimizer_offload[1|2|3]</code> 与 stage-3 参数 offload）。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8236">#8236</a> Split native host pinning into standalone <code>pin_memory</code> op
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-refactor">Refactor</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> | Merged: 2026-08-09 | +537/-70 (33 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            把 host 页锁定（<code>posix_memalign</code> + <code>mlock</code>）从 DeepNVMe 里抽出来，做成独立的 <code>deepspeed.ops.pin_memory</code> / <code>PinMemoryBuilder</code>，<strong>不再需要 libaio、也不需要 AIO worker 线程</strong>。pin manager 只在 <code>pin_memory</code> op 里编译，并通过导出符号 + <code>RTLD_GLOBAL</code> 与 <code>async_io</code>/<code>gds</code> 共享同一个进程级实例，保证 DeepNVMe 的 bounce-buffer 跳过与 <code>is_pinned</code> 判定一致。<code>new_cpu_locked_tensor</code> / <code>free_cpu_locked_tensor</code> / <code>is_pinned</code> 在 <code>aio_handle</code>/<code>gds_handle</code> 上保留为薄封装；XPU 的 <code>align_bytes=0</code> 改指向 <code>pin_handle</code>。现在 <code>ds_report</code> 在没有 libaio-dev 的机器上也会显示 <code>pin_memory ... [OKAY]</code>。本周最大的文档改动（<code>memory.rst</code> +89 行）即来自此 PR。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8212">#8212</a> Share DeepNVMe pinned-tensor manager and route swap buffers through I/O handles
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-perf">Perf</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> | Merged: 2026-08-05 | +162/-44 (15 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            DeepNVMe 只在 buffer 是 torch-pinned 或被该 handle 的 pinned-tensor manager 管理时才跳过 bounce buffer 拷贝。但这个 manager 此前是<strong>「每 handle 一个」且只认精确基址</strong>，导致一个 handle 分配的 buffer、或共享池的 narrow/view 从另一个读写 handle 提交时都认不出来，永远走 bounce。此 PR 把它改成<strong>进程级共享单例 + 基于地址区间的识别</strong>（C++ 侧 <code>deepspeed_pin_tensor_t</code> 变 <code>shared()</code> 单例并加 <code>std::mutex</code>，<code>is_managed</code> 支持 range 判定），并让 swap 子系统统一通过 I/O handle 获取 pinned 内存、查询 pinned 状态（新增 <code>handle.is_pinned(buffer)</code>）。是 #8236 / #8211 这条 pinning 重构线的第一步。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8186">#8186</a> Wiring up <code>offload_opt_states</code>
+                            <span class="badge badge-feature">Feature</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">pengdurice</span> | Merged: 2026-08-03 | +593/-151 (6 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            让 DeepCompile 的优化器状态 offload 在 inductor 下真正可用、并可从 config 打开。要点：用 <code>dc</code> 命名空间下的 4 个<strong>注册 op</strong> 取代闭包（图里只带 tensor anchor + 整数索引，活跃 tensor 留在 module state）；用 <strong>ORDERED effect 注册</strong>让原生 inductor 既保留这些 op 又保住顺序（reload-before-sync 是正确性关键）；<strong>容量优先调度</strong> <code>[(0,[z3]), (1,[for_init, z3, move_opt_states])]</code>——profiling 前先把状态清到 host，使计划基于内存下限制定；修掉<strong>三处静默的 stream 竞争</strong>（拷贝等优化器写入、<code>record_stream</code> 防 reload buffer 被提前复用、拷贝流写 reload buffer 前等计算流——缺了这条会在 backward 中途覆盖活跃激活，表现为 NaN loss）。
+                            <br><strong>实测（Qwen3-14B, 8×H200, ZeRO-3, fp32 状态 22.2GB/rank）：</strong>eager ZeRO-3 与 ZeRO-Offload 在 seq 2400 均 OOM，DeepCompile 无 offload 会在 recompile 处挂掉，带 offload 才跑得起来。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8209">#8209</a> Reduce redundant work in AutoEP token routing
+                            <span class="badge badge-perf">Perf</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">hwchen2017</span> | Merged: 2026-08-04 | +27/-107 (5 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>count_tokens_per_expert</code> 每次 forward 被调用三次，其中 <code>torch.bincount</code> 还会引入 CPU-GPU 同步，而第一次的结果本可复用。改动：<strong>复用 router 已算好的直方图</strong>（经 <code>compute_split_plan</code> 与 <code>ep_size==1</code> 路径传递）；用预分配 <code>zeros(num_experts, int32)</code> + <code>scatter_add_</code> 取代 <code>bincount</code>，<strong>消除 device→host 同步</strong>；移除 <code>deterministic_safe</code> 路径（整数直方图本身就是确定性的，原子累加顺序不影响结果）；删掉 <code>TokenReorderer</code> 模块，其两行逻辑内联进 layer forward。
+                            <br><strong>实测（gate kernel 到首个 all-to-all 前的最后一个 kernel）：</strong>A100 2.3ms → 1.7ms，H200 0.89ms → 0.53ms（<strong>约 -40%</strong>）。净删 80 行代码。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8207">#8207</a> fix(zero3): async grad offload + pinned offload buffers by default
+                            <span class="badge badge-perf">Perf</span>
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">delock</span> | Merged: 2026-08-07 | +187/-46 (17 files) | <strong>含默认值变更</strong>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            ZeRO-3 在 <code>partition_grads()</code> 里的梯度 GPU→CPU offload 用的是<strong>阻塞式 <code>copy_()</code></strong>，目的 buffer 又默认是<strong>可分页 host 内存</strong>，于是这条拷贝被钉在同步、低带宽的 staged pageable 路径上，完全无法与 backward 计算重叠——尽管它本就跑在专用的 <code>reduce_and_partition_stream</code> 上。而 ZeRO stage 1/2 早已用 <code>non_blocking=True</code>，<strong>stage 3 是唯一的异类</strong>。改动：<code>offload_config.py</code> 把 <code>offload_optimizer/offload_param</code> 的 <code>pin_memory</code> <strong>默认改为 <code>True</code></strong>（异步全带宽 DMA 必需；只在 <code>ulimit -l</code> 很紧的机器上才需关掉）；<code>stage3.py</code> 改为 <code>non_blocking=True</code>；顺手删掉一个引用未初始化属性、且无调用者的孤儿 helper。
+                            <br><strong>实测（4× RTX 4080-SUPER, autotp=2, offload_optimizer + cpu_adam）：</strong>Qwen2.5-1.5B backward 1810ms → 1308ms（<strong>-28%</strong>），Qwen2.5-3B 3097ms → 2540ms（<strong>-18%</strong>），显存与 FWD/STEP 不变。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bug Fixes -->
+                <div class="subsection">
+                    <h3 class="subsection-title">二、Bug 修复（Bug Fixes，10 个）</h3>
+
+                    <p style="font-size:0.9em;color:#721c24;background:#f8d7da;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
+                        ⚠️ 其中 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8158">#8158</a>、<a href="https://github.com/deepspeedai/DeepSpeed/pull/8210">#8210</a>、<a href="https://github.com/deepspeedai/DeepSpeed/pull/8199">#8199</a>、<a href="https://github.com/deepspeedai/DeepSpeed/pull/8178">#8178</a> 属于<strong>静默错误</strong>类别（不报错但结果/行为错误），建议重点关注。
+                    </p>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8158">#8158</a> Fix ZeRO-3 all_reduce param fetch stride for padded parameters
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-security">静默数据损坏</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">ebarkhordar</span> | Merged: 2026-08-05
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <strong>本周最值得警惕的静默损坏。</strong><code>Init._all_gather_coalesced</code> 中启用 <code>stage3_use_all_reduce_for_fetch_params</code> 的分支，用<strong>对齐后</strong>的元素数（<code>ds_numel_aligned</code>）申请扁平 buffer，却用<strong>未对齐</strong>的 <code>ds_numel</code> 前进偏移。二者只在 <code>ds_numel % world_size == 0</code> 时相等，一旦参数有 padding，后续每个参数的基址就会落进前一个参数对齐跨度内 <code>padding_i</code> 个槽位。这些重叠槽位是前驱的分区 padding——而 <code>_partition_param</code> 用 <code>torch.empty</code> 分配分区，且在分区超出参数末尾的那个 rank 上只拷贝 <code>elems_to_copy</code> 个元素，尾部从未被写入、装的是分配器残留值。由于 fetch 是 <strong>SUM 语义的 all_reduce</strong>，这段未初始化尾部会被<strong>加进下一个参数的头部元素</strong>。兄弟 <code>all_gather</code> 路径写入同样 padding 但每个参数只 narrow 自己的 <code>ds_numel</code>，所以读不到——<strong>此损坏专属于 SUM 重建路径</strong>。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8157">#8157</a> Fix DeepCompile ZeRO-3 gathered parameter ownership
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> (Masahiro Tanaka) | Merged: 2026-08-03 | +846/-23 (6 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            DeepCompile 把 ZeRO-3 的 all-gather / release 插入编译图，但 Dynamo 因 graph break 跳过某个 frame 时，该 frame 会 eager 执行、不跑这些图操作（#8059 的 eager fallback 负责这种情况）。问题有四：<strong>(1)</strong> Dynamo guard 求值发生在外层 forward 上下文内、且 <code>is_compiling()</code> 为假，会被误判成真实 eager 执行而触发不必要的 all-gather；<strong>(2)</strong> fallback gather 的参数正常在 backward 后分区，但 backward 被跳过时这个清理不会跑；<strong>(3)</strong> 残留的 full 参数可能一直占着显存进入下一次 forward；<strong>(4)</strong> 被 <code>GatheredParameters</code> 上下文覆盖的参数必须保持 full 直到上下文退出，否则 fallback 清理会在使用中把它分区掉。此 PR 逐一区分处理：guard 求值时跳过 all-gather、下次最外层 forward 前分区残留的非持久 full 参数、并把 <code>GatheredParameters</code> 覆盖的参数移出 fallback 清理范围。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8198">#8198</a> Fix AutoEP ZeRO-1/2 universal conversion
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> | Merged: 2026-08-07 | +533/-80 (9 files) | Fixes <a href="https://github.com/deepspeedai/DeepSpeed/issues/8147">#8147</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            AutoEP 在 ZeRO stage 1/2 下保存的 checkpoint，专家优化器状态存成 ZeRO 分片 fragment，但 Universal Checkpoint 转换会先走通用路径去 merge 这些专家 fragment。当源 EP size &gt; 1 时，转换可能<strong>把不同 EP rank 的数据混在一起</strong>并在 reshape 时失败；fallback 路径还可能产出缺少 repartition 元数据的专家 tensor，并在需要 FP32 master 的地方用了混精度模型权重。修法：在通用 merge 之前先从 checkpoint 元数据识别<strong>融合的 AutoEP 专家参数</strong>，按 EP-rank 顺序从 ZeRO fragment 重建 FP32 master 与 Adam 状态；用保存的 topology 设置同时兼容 expert-before-data 与 data-before-expert 两种 rank 布局；给每个专家状态都写入专家元数据以支持<strong>换 EP size 加载</strong>；并把流水线层发现限制到完整的 pipeline checkpoint 文件名，避免 per-expert 文件被误分类。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8210">#8210</a> Fix ZeRO++ secondary shard copy for small params
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">ZyEng-Art</span> | Merged: 2026-08-07 | Fixes <a href="https://github.com/deepspeedai/DeepSpeed/issues/6659">#6659</a>（2024 年的老 issue）
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            修复 ZeRO++ <code>_partition_param_sec()</code> 中「小参数与其二级分片不重叠」的边界情况。报告场景：shape <code>[32]</code> 的参数被 DP 对齐到 2048，<code>zero_hpz_partition_size=16</code> 下二级分片大小变成 128，于是对某些二级组 rank，<code>secondary_start</code> 已经超过 <code>param.ds_numel</code>、<code>sec_numel</code> 变成 0——而旧代码仍执行 <code>one_dim_param.narrow(0, secondary_start, 0)</code>，PyTorch 在起始索引越界时<strong>即使长度为 0 也会抛 IndexError</strong>。修法：<code>sec_numel == 0</code> 时跳过二级拷贝，并<strong>先把二级分片 buffer 清零</strong>，使未覆盖的 padding 保持确定性、不会把未初始化值泄漏进后续的 coalesced 量化。附带两个针对性回归测试。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8216">#8216</a> Do not let one op builder's compatibility probe break importing deepspeed
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">adityasingh2400</span> | Merged: 2026-08-07 | Fixes <a href="https://github.com/deepspeedai/DeepSpeed/issues/7452">#7452</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>import deepspeed</code> 时 <code>git_version_info.py</code> 会探测<strong>每一个</strong> op 的编译兼容性，无论调用方是否会用到，而且没人捕获探测失败。于是在「有可见 GPU 但没装 CUDA toolkit」的机器上，CUDA op builder 的 <code>is_compatible()</code> 抛出 <code>MissingCUDAException</code>，导致<strong>连纯 sharding 场景都无法 import deepspeed</strong>，<code>ds_report</code> 同样挂掉。新增 <code>probe_is_compatible</code>：探测失败即报告为不兼容并打印原因，用在 import 期扫描与 <code>ds_report</code> 两处。同时让 <code>installed_cuda_version</code> 在 nvcc 跑不起来时抛 <code>MissingCUDAException</code>——<code>CUDA_HOME</code> 经常指向 runtime-only 安装（bin 下没有 nvcc），原先那个裸 <code>FileNotFoundError</code> 会绕过 <code>builder.py</code> 里已有的两个降级到 CPU-only 的 handler。新增 3 个测试。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8178">#8178</a> Make <code>PipelineModule.set_checkpoint_interval</code> actually change the interval
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-security">静默无效</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> | Merged: 2026-08-04
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>set_checkpoint_interval()</code> 赋值给 <code>self.checkpoint_interval</code>，但全仓库所有读者用的都是 <code>self.activation_checkpoint_interval</code>（<code>forward()</code> 依它分支和步进、<code>_precompute_checkpointable_values()</code> 用它做缓存键、<code>PipelineEngine</code> 直接赋它）。<code>self.checkpoint_interval</code> <strong>在仓库里没有任何读取点</strong>，所以这个调用等于写了个死属性，激活重计算的调度<strong>静默保持原样</strong>。而且仅改成正确属性还不够——它喂给的 <code>_precompute_checkpointable_values()</code> 缓存失效逻辑本身也是坏的，此 PR 一并修掉。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8199">#8199</a> Stop <code>trim_mean</code> sorting the caller's list in place
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-security">静默数据错乱</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> | Merged: 2026-08-05
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>CommsLogger.comms_dict</code> 按消息大小存并行列表 <code>[count, latencies, algbws, busbws]</code>，索引 <code>i</code> 表示第 i 次记录的 op。<code>get_operation_summary()</code> / <code>log_all()</code> 把这些列表交给 <code>trim_mean</code>，而后者<strong>原地 <code>data.sort()</code></strong>——于是「只读」的汇总调用会把三个列表<strong>各自独立排序，彻底破坏它们之间的行对应关系</strong>。作者给出实测：latency <code>[3.0,1.0,2.0]</code> 汇总后变 <code>[1.0,2.0,3.0]</code>，而 <code>algbw</code> 排成另一种顺序，本该恒定的 <code>latency[i]*algbw[i]</code> 变成 <code>[0.0055,0.0164,0.0492]</code>，<code>get_raw_data()</code> 就把这份错乱数据交给下游。判定为非预期行为的证据：<code>get_operation_summary()</code> 已经写了 <code>.copy()</code> 并注释「创建快照以避免并发修改」——意图明确，只是那是浅拷贝。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8208">#8208</a> Fix <code>MLU_Accelerator</code> conformance to the <code>DeepSpeedAccelerator</code> ABC
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">ebarkhordar</span> | Merged: 2026-08-04
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            作者比对了全部九个 backend 与 ABC，发现只有 <code>MLU_Accelerator</code> 有三处偏离：<strong>(1)</strong> <code>pin_memory</code> 漏掉 <code>align_bytes</code> 参数，而 ZeRO-Infinity / NVMe offload swap 路径有三个调用点以关键字传 <code>align_bytes=0</code>，在 MLU 上直接 <code>TypeError</code>；<strong>(2)</strong> <code>initial_seed</code> 多要一个 ABC 未声明的参数——#5569 已把它统一改成无参，MLU 三个月后在 #6472 以 pre-#5569 的 NPU 代码副本落地，把参数带了回来，于是 <code>get_accelerator().initial_seed()</code> 只在 MLU 上抛 <code>TypeError</code>；<strong>(3)</strong> 第三处一并对齐。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8205">#8205</a> Preserve tensor learning rates in OneCycle
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> | Merged: 2026-08-03 | Follow-up <a href="https://github.com/deepspeedai/DeepSpeed/pull/8202">#8202</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            延续上周 #8202 的 tensor LR 修复：当优化器以 tensor 学习率启动时，OneCycle 初始化在套用 <code>cycle_min_lr</code> 的过程中会把它<strong>替换成 Python 标量</strong>，于是在后续调度器更新有机会保住它之前，调用方的 tensor 身份、shape、dtype 就已经丢了。改为让 OneCycle 的 LR 初始化走已有的 tensor-aware 更新 helper，与后续 scheduler step 的路径保持一致。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8238">#8238</a> Fix compilation error for torch 2.12+
+                            <span class="badge badge-bugfix">Bugfix</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">hwchen2017</span> | Merged: 2026-08-09 | Fixes <a href="https://github.com/deepspeedai/DeepSpeed/issues/8235">#8235</a>（当天提当天修）
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            PyTorch 2.12+ 改用 <code>-std=c++20</code>，而 DeepSpeed 在 <code>op_builder</code> 多处硬编码 <code>-std=c++17</code>，导致 <code>ds_opt_adam</code> / <code>cpu_adam</code> 等算子 JIT 编译报「C++20 or later compatible compiler is required to use PyTorch」。此 PR 对 torch 2.12+ 改用 <code>-std=c++20</code>。<strong>issue 8/8 提出，8/9 即合入修复。</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tests / CI / Release -->
+                <div class="subsection">
+                    <h3 class="subsection-title">三、测试 / CI / 版本发布（Test / CI / Infra，6 个）</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8206">#8206</a> Consolidate LR scheduler tensor-LR tests into a contract suite
+                            <span class="badge badge-infra">Test</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">delock</span> | Merged: 2026-08-04
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <strong>把连续数周的 LR 调度器 bug 修复固化成「契约」，本周最有工程价值的测试改进。</strong>此前 <code>WarmupLR</code> / <code>WarmupCosineLR</code> / <code>OneCycle</code> 三个 <code>*_preserves_tensor_lr</code> 测试各写一份，同一类 bug（#8202、#8205）每次都只是因为「刚好有人手写了那个 scheduler 的回归测试」才被抓到。此 PR 换成由 <code>TENSOR_LR_CONTRACTS</code> 表驱动的单个参数化契约测试，外加一条<strong>注册表覆盖断言</strong>：只要 <code>VALID_LR_SCHEDULES</code> 里有 scheduler 没有对应契约行，<strong>collection 阶段就报错并指名缺失的类</strong>。两种失败模式都做了经验验证（在 #8205 之前的分支上跑，两个 OneCycle 用例确实失败）。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8218">#8218</a> Update version.txt pre-0.19.4 release &nbsp;·&nbsp;
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8219">#8219</a> Update version.txt after 0.19.4 release
+                            <span class="badge badge-infra">Release</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">loadams</span> (Logan Adams) | Merged: 2026-08-06
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <strong>v0.19.4 补丁版本发布</strong>的例行版本号前后置更新。详见下方 Roadmap 章节。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8188">#8188</a> Remove redundant DCO workflow &nbsp;→&nbsp;
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8220">#8220</a> Restore the custom DCO workflow
+                            <span class="badge badge-infra">CI/CD</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> | Merged: 2026-08-03 / 2026-08-06
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            一次<strong>撤回又回滚的小插曲</strong>：DeepSpeed 当初自建 DCO workflow（#8086）是因为官方 DCO App 不支持 GitHub merge queue；官方 App 在 <a href="https://github.com/dcoapp/app/pull/292">dcoapp/app#292</a> 中已经支持 <code>merge_group</code>，于是 8/3 用 #8188 删掉自建 workflow（-585 行）。但 8/6 又用 #8220 <strong>把它整个恢复了回来</strong>（+622 行），说明官方 App 的 merge queue 支持在实际使用中仍不满足需求。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8228">#8228</a> Update actions versions for workflows
+                            <span class="badge badge-infra">CI/CD</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">loadams</span> | Merged: 2026-08-07 | +24/-24 (10 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            例行升级 10 个 workflow 中所用 GitHub Actions 的版本。相关的 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8221">#8221</a>（workflow step 版本）与 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8222">#8222</a>（pytest 版本，dependabot）仍是 draft。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Docs note -->
+                <div class="subsection">
+                    <h3 class="subsection-title">四、文档（Documentation）</h3>
+                    <div class="pr-card">
+                        <div class="pr-title">本周<strong>没有纯文档 PR 合入</strong><span class="badge badge-docs">Docs</span></div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            文档改动全部随代码 PR 一起进来（已核对本周 24 个 commit 的 diff）：
+                            <ul style="margin:8px 0 0 20px;">
+                                <li><code>docs/_pages/config-json.md</code> — 来自 #8225、#8207、#8217、#8203、#8180（新增 <code>managed_gradient_accumulation</code>、<code>pin_memory</code> 默认值、Triton grouped-GEMM 开关等配置说明）</li>
+                                <li><code>docs/code-docs/source/memory.rst</code> — <strong>+89/-1，本周最大文档改动</strong>，来自 #8236（新 <code>pin_memory</code> op）与 #8207</li>
+                                <li><code>docs/code-docs/source/training.rst</code> — 来自 #8225、#8217、#8203</li>
+                                <li><code>docs/_tutorials/deepnvme.md</code> — +15，来自 #8236</li>
+                            </ul>
+                            <div style="margin-top:8px;">另外 <code>blogs/</code> 与 <code>README</code> 本周<strong>无改动</strong>。值得关注的纯文档 PR <a href="https://github.com/deepspeedai/DeepSpeed/pull/8223">#8223</a>（修 41 处 docstring 参数名错误）仍在 review，见下节。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open PRs in Review -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">👀</span> 本周新提交、处于 Review 状态的 PR（15 个）</h2>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">一、新特性（Features，5 个）</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8213">#8213</a> Add an opt-in DeepEP transport for the AutoEP expert all-to-all
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-perf">Perf</span>
+                            <span class="badge badge-changes">Changes Requested</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">yh0903</span> | Created: 2026-08-04 | +1018/-6 (8 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <strong>本周 review 队列里最值得关注的一个。</strong>为 AutoEP 的专家 all-to-all 增加可选 DeepEP transport，通过环境变量选择、默认仍走 NCCL：<code>DEEPSPEED_AUTOEP_COMM_BACKEND=nccl|deepep</code>、<code>DEEPSPEED_AUTOEP_COMM_SMS</code>（默认 12）。专家 all-to-all 是 AutoEP 单步里最大的开销。作者用真实 SFT 运行录下的路由在 16×H100（跨 2 节点）回放：
+                            <table style="width:100%;font-size:0.9em;margin-top:8px;border-collapse:collapse;">
+                                <tr style="background:#eef2ff;"><th style="text-align:left;padding:4px 8px;">路由</th><th style="padding:4px 8px;">倾斜度</th><th style="padding:4px 8px;">NCCL</th><th style="padding:4px 8px;">DeepEP</th><th style="padding:4px 8px;">加速</th></tr>
+                                <tr><td style="padding:4px 8px;">math, last step</td><td style="text-align:center;">3.01</td><td style="text-align:center;">99.72 ms</td><td style="text-align:center;">48.02 ms</td><td style="text-align:center;"><strong>2.08×</strong></td></tr>
+                                <tr><td style="padding:4px 8px;">code, last step</td><td style="text-align:center;">2.56</td><td style="text-align:center;">100.52 ms</td><td style="text-align:center;">47.91 ms</td><td style="text-align:center;"><strong>2.10×</strong></td></tr>
+                                <tr><td style="padding:4px 8px;">code, worst step</td><td style="text-align:center;">5.09</td><td style="text-align:center;">115.75 ms</td><td style="text-align:center;">46.40 ms</td><td style="text-align:center;"><strong>2.49×</strong></td></tr>
+                            </table>
+                            作者还把收益拆开了：约 <strong>1.29×</strong> 来自去重（DeepEP 对每个目标 rank 只发一次 token，而非每个被选专家发一次，这部分理论上不换 transport 也能做），余下 <strong>1.61×</strong> 来自 DeepEP 的 kernel——<strong>抗倾斜能力也来自这里</strong>：在录到的最不均衡步上 NCCL 退化到 115.8ms，DeepEP 仍稳定在 46-48ms。<em>注：数据为作者自测，未经独立验证；目前状态为 Changes Requested。</em>
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8234">#8234</a> Add adaptive gather-buffer pooling for DeepCompile ZeRO-3
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> | Created: 2026-08-07 | +2076/-161 (22 files) | <strong>本周最大 PR</strong>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            从大 PR <a href="https://github.com/deepspeedai/DeepSpeed/pull/8169">#8169</a>（"Stabilize DeepCompile ZeRO-3 memory scheduling"，已关闭）中拆出的<strong>原生 gather-buffer 池与分配器压力恢复</strong>部分。叠加在 #8233 之上（需 #8233 先合入），在单节点 2×H100 上 12/12 测试通过。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8233">#8233</a> Split DeepCompile ZeRO-3 memory scheduler
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-refactor">Refactor</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">tohtana</span> | Created: 2026-08-07 | +1272/-135 (19 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            同样来自 #8169 的拆分，包含 DeepCompile ZeRO-3 的<strong>调度与 gather/release 生命周期</strong>改动，单节点 2×H100 上 10/10 测试通过。<strong>把一个巨型 PR 主动拆成可 review 的 stacked 序列（#8233 → #8234），是本周值得学习的协作实践。</strong>
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8211">#8211</a> Add native (DeepNVMe) host-memory pinning backend for accelerators
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-truwase</span> | Created: 2026-08-04 | +702/-253 (21 files) | 叠加在已合入的 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8236">#8236</a> 之上
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            pinning 重构线的<strong>最后一块拼图</strong>：通过 <code>DS_PIN_MEMORY_BACKEND</code> 环境变量选择 host 内存页锁定后端（默认 <code>torch</code>）。设为 <code>native</code> 时，CPU 内存改由独立的 <code>pin_memory</code> op（<code>PinMemoryBuilder</code> / <code>pin_handle</code>，<code>posix_memalign</code> + <code>mlock</code>）页锁定，而非 <code>torch.pin_memory()</code>；由于走 <code>pin_handle</code>，DeepNVMe 的 I/O handle 能通过进程级 manager 认出它们并跳过 bounce buffer，<strong>且不需要 libaio / AIO worker 线程</strong>。新增 <code>deepspeed/utils/pin_memory.py</code>：进程级共享的 <code>NativePinnedMemory</code>，跟踪已 pin 的指针区间（使 slice/view 也报告为 pinned）、给 buffer 打 <code>.ds_pinned</code> 标记、支持 <code>make_copy</code>/<code>match_shape</code>，并用 <code>weakref</code> finalizer 保证 GC 时释放 mlock 页。<strong>设计上刻意「大声失败」</strong>：op 编译不出来就直接明确报错，不静默回退到 torch。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8232">#8232</a> Add configurable sum gradient reduction
+                            <span class="badge badge-feature">Feature</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">zupengwang</span> | Created: 2026-08-07 | +173/-17 (7 files) | Addresses <a href="https://github.com/deepspeedai/DeepSpeed/issues/7107">#7107</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            新增 <code>gradient_allreduce_op</code> 配置项，默认 <code>"mean"</code>（保持现有行为），可选 <code>"sum"</code>。动机：部分分布式目标函数——尤其是<strong>在全局 gather 的 embedding 上做对比学习</strong>——需要对数据并行梯度求和而非求平均，现在用户只能手动 rescale loss 去抵消 DeepSpeed 的 world-size 归一化。实现覆盖 ZeRO stage 0/1/2 的 reduce-scatter、allreduce 与非连续 fallback 三条路径，并对不支持的 ZeRO-3、ZenFlow、DeepCompile 组合给出明确的配置错误。验证：2× RTX 3090 / PyTorch 2.13.0+cu130，<code>TestGradientAllreduceOp</code> 18 passed。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">二、Bug 修复（Bug Fixes，7 个）</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8226">#8226</a> Fix checkpoint rank selection for Ulysses sequence parallelism
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-approved">Approved</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">sfc-gh-thonguyen</span> | Created: 2026-08-06 | <strong>已 Approved，即将合入</strong>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            Ulysses 序列并行不切分模型权重，因此 DeepSpeed 记录 <code>mp_world_size == 1</code>；但 Ulysses MPU 把 <code>get_model_parallel_rank()</code> 别名到了序列并行 rank。checkpoint 加载在选择 model-state 文件时把这两个值混在一起，导致 <strong>SP rank &gt; 0 的进程索引越过了那个唯一的非 SP checkpoint 分片</strong>。修法：SP 场景统一用 checkpoint model-parallel rank 0，把 checkpoint rank 选择在 model / expert / optimizer / ZeRO 四条路径上集中收敛，同时为张量并行 MPU 保留真实的 model-parallel rank。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8215">#8215</a> Keep parameter dtype through ZeRO-3 weight quantization
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">adityasingh2400</span> | Created: 2026-08-05 | Fixes <a href="https://github.com/deepspeedai/DeepSpeed/issues/7775">#7775</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            量化算子在两个方向上都是 fp16-only：<code>csrc/quantization/pt_binding.cpp</code> 的 <code>quantize_kernel</code> 不管 tensor 实际 dtype 都把 <code>input_vals.data_ptr()</code> 转成 <code>__half*</code>，dequantize 又绑成 <code>dequantize&lt;__half&gt;</code> 总是分配 fp16 输出。<code>CUDAQuantizer</code> 原样透传参数，于是在 <code>bf16</code> + <code>zero_quantized_weights</code> 下，ZeRO-3 把 <strong>bf16 的比特直接当 fp16 解释</strong>，再把 <code>param.data</code> 恢复成 fp16——issue 里的 BERT 失败就是随后的 dtype 不匹配。作者特意指出：<strong>入口处的比特重解释才是更隐蔽的那一半——在 dtype 不匹配被发现之前，数值就已经错了。</strong>修法：<code>quantize</code> 入 kernel 前显式转 fp16 保证数值读对，<code>dequantize</code> 增加可选 dtype 参数、5 个 gather 路径调用点传入参数真实 dtype；不传则维持 fp16 返回，其他调用方行为不变。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8239">#8239</a> Filter <code>--include</code> against the real slots, not against itself
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> | Created: 2026-08-09
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>parse_inclusion_exclusion()</code> 用 inclusion 字符串本身去种子那个本该用于校验的 <code>host_info</code> 字典，于是 <code>--include</code> 里指名的主机<strong>是在拿自己的副本校验自己</strong>。后果之一：<strong>裸主机名会解析成零个 slot</strong>——<code>parse_node_config_list("worker-0")</code> 得到 <code>{"worker-0": []}</code>，空列表被复制回来后又因为「空」而被丢弃。作者给的例子里 <code>pool={"worker-0":4,"worker-1":4}</code> 时，<code>--include worker-0</code> 得到 <code>{}</code>（应为全部 4 个 slot），<code>--include worker-0@worker-1:0,2</code> 得到 <code>{'worker-1':[0,2]}</code>（漏了 worker-0）。<strong>任务于是静默地跑在 2 张卡而不是 6 张卡上，没有报错也没有告警</strong>，而这正是 <code>parse_resource_filter</code> 自己 docstring 里的示例用法。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8214">#8214</a> [DeepCompile] Fix KeyError on frozen parameters in ZeRO-3
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">roycho96</span> | Created: 2026-08-05
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            ZeRO-3 + <code>"compile": {"deepcompile": true}</code> 下，只要模型有任何 <code>requires_grad=False</code> 的参数，<code>engine.compile()</code> 就会 <code>KeyError</code>——<strong>LoRA/PEFT 与部分冻结的训练完全用不了 DeepCompile</strong>。原因：<code>init_z3()</code> 为每个 module 参数查找 grad partition，但 stage-3 优化器只为自己拥有的参数建这张表（<code>_get_trainable_parameter_groups()</code> 会丢掉 <code>requires_grad=False</code> 的参数，表由 <code>fp16_groups</code> 填充），于是第一个冻结参数根本不在表里。PR 附带可直接 <code>torchrun --nproc_per_node=2</code> 复现的最小脚本。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8240">#8240</a> [DeepCompile] Fix staticmethod handling on Python 3.9
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">baremetaldevx86</span> | Created: 2026-08-09 | Fixes <a href="https://github.com/deepspeedai/DeepSpeed/issues/7433">#7433</a>
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            DeepCompile 直接从类命名空间取 PyTorch 的 compiled backward hook，在 Python 3.9 上拿到的是<strong>不可直接调用的 <code>staticmethod</code> 描述符</strong>，报 <code>TypeError: 'staticmethod' object is not callable</code>。修法：调用前先解包出底层函数，同时覆盖两种实现（PyTorch 2.6 的 <code>_backward_prologue</code> 与 2.7+ 的 <code>_backward_impl</code>）。回归测试用模拟 Python 3.9 的不可调用 <code>staticmethod</code> 行为，使 CI 跑在更高版本 Python 上时依然能守住这个失败。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8237">#8237</a> Keep the elastic batch size within <code>max_train_batch_size</code>
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> | Created: 2026-08-09
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>_get_compatible_gpus_v01</code> 会校验每个 micro batch 是否 <code>&lt;= max_acceptable_batch_size</code>，但第一条启发式缩放的是这些 micro batch 的 <strong>LCM，而 LCM 从未被校验</strong>。它进入 <code>base_list</code> 后到达 <code>get_candidate_batch_sizes</code>，在 <code>base &gt;= max_acceptable_batch_size</code> 分支里被<strong>原样追加</strong>。于是一个用户已经声明「太大」的 batch size 成了候选；又因为 LCM 能整除所有 micro batch，它往往在 <code>get_best_candidates</code> 的「最多有效 GPU 数」投票中胜出。这与 docstring 承诺的「小于 max_acceptable 的最大 batch size」以及 <code>config-json.md</code> 对 <code>max_train_batch_size</code> 的定义都矛盾。
+                        </div>
+                    </div>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8227">#8227</a> Return a copy from <code>OnebitLamb.get_lamb_coeffs</code>
+                            <span class="badge badge-bugfix">Bugfix</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">vineethsaivs</span> | Created: 2026-08-06
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            <code>OnebitLamb.step()</code> 开头用 <code>del self.lamb_coeffs[:]</code> 原地清空上一步的统计，而 <code>get_lamb_coeffs()</code> 返回的正是<strong>同一个 list 对象</strong>。于是读取系数（用于打日志、或观察 warmup 期的 trust ratio）的调用方拿到的是优化器自己的列表，下一次 <code>step()</code> 会在他手里把它清空——<strong>快照静默变成 <code>[]</code></strong>。作者附了对照实测：<code>OnebitLamb</code> step 后快照被清空，而 <code>FusedLamb</code> 有<strong>一模一样的 <code>del self.lamb_coeffs[:]</code> 和同名访问器</strong>，只因为它返回时构造了新列表才没事——两个优化器今天的行为是不一致的。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">三、文档（Documentation，1 个）</h3>
+
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8223">#8223</a> Fix docstring <code>Args</code> entries that name a parameter the function does not take
+                            <span class="badge badge-docs">Docs</span>
+                            <span class="badge badge-review">Review Required</span>
+                        </div>
+                        <div class="pr-meta">
+                            Author: <span class="author">darkdi</span> | Created: 2026-08-06 | +22/-49 (31 files)
+                        </div>
+                        <div class="pr-desc" style="font-size:0.9em;color:#555;margin-top:6px;">
+                            系统性清理：<strong>41 处 <code>Args:</code> 条目写的参数名是函数并不接受的</strong>，其中 20 处是改名后 docstring 没跟上。纯 docstring 改动，不动签名、不动行为、不动测试。比较典型的几处：<code>RaggedUnembed.forward</code> 的 <code>raged_metadata</code>（拼写错误，应为 <code>ragged_metadata</code>）、<code>FlopsProfiler</code> 的 <code>object</code>（应为 <code>model</code>）、<code>attn_out_in_features</code> 文档写 <code>in_features</code>（实为 <code>out_features</code>）、<code>InferenceEngineV2.query</code> 的 <code>n_tokens</code>（实为 <code>max_request_tokens</code>）、<code>MOELayer</code> 的 <code>expert</code>（实为 <code>experts</code>）、<code>get_grad_norm_direct</code> 的 <code>parameters</code>（实为 <code>params</code>）。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">四、CI/CD（草稿状态，2 个）</h3>
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8221">#8221</a> Update versions of steps in workflows
+                            <span class="badge badge-infra">CI/CD</span>
+                            <span class="badge badge-draft">Draft</span>
+                        </div>
+                        <div class="pr-meta">Author: <span class="author">loadams</span> | Created: 2026-08-06 | +5/-87 (13 files)</div>
+                    </div>
+                    <div class="pr-card">
+                        <div class="pr-title">
+                            <a href="https://github.com/deepspeedai/DeepSpeed/pull/8222">#8222</a> Update pytest version per latest dependabot
+                            <span class="badge badge-infra">CI/CD</span>
+                            <span class="badge badge-draft">Draft</span>
+                        </div>
+                        <div class="pr-meta">Author: <span class="author">loadams</span> | Created: 2026-08-06 | +1/-1 (1 file)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Issues -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">🐛</span> 社区新提 Issue（4 个）</h2>
+
+                <p style="font-size:0.92em;color:#555;margin-bottom:14px;">
+                    本周新 issue 数量不多但质量很高：<strong>1 个严重的静默正确性回归</strong>、<strong>2 个来自 code review 的架构级设计提案</strong>（均由 delock 在同一天提出）、1 个当天被修掉的编译问题。
+                </p>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8224">#8224</a> ZeRO-2 + bf16 在多 rank 下静默算错梯度（子模块单步内被复用多次时），源于 #7665 的回归，0.19.3 仍存在
+                        <span class="badge badge-bugfix">严重回归</span>
+                    </div>
+                    <div class="issue-meta">
+                        Reporter: souroosh | Created: 2026-08-06 | 状态: <strong>OPEN</strong>（维护者 sfc-gh-truwase 已回复索要复现脚本，并 cc tohtana）
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:8px;">
+                        <strong>本周最需要关注的社区反馈。</strong>在 <strong>ZeRO stage 2 + bf16、多 rank、无 offload</strong> 下，0.18.2 及之前正确的训练从 <strong>0.18.3 开始发散，直到最新的 0.19.3 依然是错的</strong>。这是一个<strong>静默的梯度 reduce 正确性 bug</strong>（不报错、不告警）：跨 rank reduce 后的梯度<strong>丢掉了一个子图的贡献</strong>。触发条件是任何模型在单次 <code>backward()</code> 里让某个参数的梯度累积 hook 在<strong>多于一个子图</strong>中运行——报告者的场景是一个 encoder 子模块每步被用两次（主路径一次、为辅助 loss 编码第二个输入一次）。
+                        <br><br>报告质量极高：环境为 PyTorch 2.11 / CUDA 13.2.1 / 16 ranks（2 节点×8 卡）/ <code>overlap_comm=true</code> / 梯度累积 8；并给出<strong>逐版本二分</strong>（0.14.4、0.16.5、0.17.6 正确 → 0.18.3+ 错误）与匹配窗口下的中位数指标。现象签名非常明确：LR 被 warmup 钉在 0 时各项 loss 与基线完全一致（说明数据与前向没问题），<strong>发散恰好从 LR 离开 0 的那一刻开始</strong>，随后重建 loss 约翻倍且不再回落、两个辅助 latent 项反向崩塌——典型的「优化器被喂了错误梯度」而非数据/前向问题。报告者指认 <a href="https://github.com/deepspeedai/DeepSpeed/pull/7665">#7665</a> 为成因。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8230">#8230</a> [RFC] Universal checkpoint：非语义化的 per-parameter 几何分片映射
+                        <span class="badge badge-feature">RFC / 架构提案</span>
+                    </div>
+                    <div class="issue-meta">
+                        Reporter: delock | Created: 2026-08-07 | 状态: OPEN（Draft，2 条评论）
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:8px;">
+                        本周<strong>最有战略意义的设计提案</strong>，直接产自对 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8185">#8185</a>（非均匀分片）与 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8168">#8168</a>（ZeRO-3 checkpoint 合并）的 review。
+                        <br><br><strong>问题：</strong>Universal Checkpoint 的转换/恢复 schema 目前是<strong>语义化的</strong>——靠 <code>uc_info</code> 里一组正则分类（<code>TP_REPLICATED_PARAMETER_PATTERNS</code>、<code>PARAMETER_WITH_ROW_PARALLELISM_PATTERNS</code>、<code>VOCABULARY_PARAMETER_PATTERNS</code>、<code>PARAMETER_WITH_SUB_PARAMS</code>、<code>AUTOTP_UNSUPPORTED_PARAMETER_PATTERNS</code>）按参数名判断它的架构角色。这把它锁在一个<strong>封闭的布局集合</strong>里：集合外的布局即使模型运行时能正常切分和训练，转换器也会标成 <code>unsupported</code> 并拒绝。提案点名了目前转不了的布局（BLOOM/CodeGen 交错式融合 QKV、Yuan 非连续共享 QK），并指出那个「盲目 <code>torch.cat(dim=0)</code>」的 fallback 是静默损坏的隐患。
+                        <br><br><strong>提案：</strong>改成<strong>非语义的、per-parameter 几何分片映射</strong>——每个参数记录自己的 TP 分片与完整逻辑张量之间的几何对应关系；转换器与恢复器只<strong>执行</strong>这张映射，不再<strong>分类</strong>参数角色。这样任何模型能切的布局都能转换，转换器也不再与具体模型绑定。
+                        <br><br><strong>作者补充的延伸价值：</strong>该 schema 还能解锁<strong>跨拓扑的在线权重传输</strong>。今天在两个并行度不同的实例之间搬权重（如在线蒸馏里 teacher <code>tp=4</code> ↔ student <code>tp=2</code>，或训练中途调整 TP/DP），必须走一次磁盘往返：save → <code>ds_to_universal</code> 转换 → load。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8231">#8231</a> Cleanup：移除 <code>tp_shard</code> 的进程级标量全局变量（<code>num_kv_heads</code> / <code>tp_grain_size</code> 等），改为显式传递
+                        <span class="badge badge-refactor">技术债 / Tracking</span>
+                    </div>
+                    <div class="issue-meta">
+                        Reporter: delock | Created: 2026-08-07 | 状态: OPEN（2 条评论，jinyouzhi 表示强烈认同）
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:8px;">
+                        同样出自 #8185 的 review，单独立 tracking issue 以免遗失。<code>tp_shard.py</code> 把 <code>num_kv_heads</code>、<code>tp_grain_size</code>、<code>num_attention_heads</code>、<code>n_embd</code> 存成<strong>进程级可变全局变量</strong>（AutoTP 替换时 <code>set_*</code> 写入，<code>get_shard_size</code> / <code>get_shard_size_list</code> 读回）。因为是进程级的，<strong>同一进程里加载第二个 AutoTP 模型会覆盖它们</strong>，于是第一个模型后续的切分/gather 会静默读到错误值——这使得<strong>「一个进程跑多个 AutoTP 模型」根本不安全</strong>：teacher/student 不同 TP size、在线蒸馏，以及任何在第一个模型之后再建第二个 AutoTP 模型的流程（包括经 <code>init_inference</code>）都受影响。#8185 用 <code>_freeze_partition_sizes</code> 只治了一个症状（构造时解析一次、运行时不再读全局），但全局变量仍是新模型污染旧模型状态的通道。方向：把这份状态挪到 per-model，在 <code>AutoTP.__init__</code> 里从模型算一次并显式穿过各 sharding helper，彻底删掉全局变量与 <code>set_*</code>/<code>get_*</code>。
+                    </div>
+                </div>
+
+                <div class="issue-card">
+                    <div class="issue-title">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/issues/8235">#8235</a> 需要从 <code>-std=c++17</code> 迁移到 <code>-std=c++20</code>
+                        <span class="badge badge-approved">已关闭 / 已修复</span>
+                    </div>
+                    <div class="issue-meta">
+                        Reporter: CO18326 | Created: 2026-08-08 | 状态: <strong>CLOSED</strong>，由 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8238">#8238</a> 于 2026-08-09 修复
+                    </div>
+                    <div style="font-size:0.9em;color:#555;margin-top:8px;">
+                        PyTorch 2.12+ 起使用 <code>-std=c++20</code>，而 DeepSpeed 在 <code>op_builder</code> 目录多处硬编码 <code>-std=c++17</code>，导致 <code>ds_opt_adam</code> / <code>cpu_adam</code> 等算子在 PyTorch 2.12+ 上 JIT 编译失败（报错 <code>C++20 or later compatible compiler is required to use PyTorch</code>；从报错的编译命令行能清楚看到 <code>-std=c++20</code> 之后又被追加了 <code>-std=c++17</code> 覆盖掉）。报告者给出的临时解法就是手动替换这些 flag。<strong>issue 提出次日即被修复合入，响应速度值得一提。</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">🗺️</span> Roadmap &amp; 版本发布动态</h2>
+
+                <div class="roadmap-section">
+                    <h3>🎉 v0.19.4 补丁版本发布（2026-08-06）</h3>
+                    <p style="font-size:0.92em;color:#555;margin-bottom:12px;">
+                        <a href="https://github.com/deepspeedai/DeepSpeed/releases/tag/v0.19.4">v0.19.4 Patch Release</a> 于 <strong>8 月 6 日 02:10 UTC</strong> 发布，包含约 <strong>41 个 PR</strong> 与 <strong>7 位新贡献者</strong>（sohumt123、ebarkhordar、yh0903、akshansh47、n33levo、zupengwang、pengdurice）。距上一个版本 v0.19.3（7/23）两周。
+                        整体定位是<strong>一次面向正确性与稳健性的补丁，同时带上三条大型工作线的首批切片</strong>：
+                    </p>
+                    <div class="roadmap-item">
+                        <h4>LR 调度器正确性专项 —— 本版本最大的单一簇</h4>
+                        <p>#8151 / #8166 / #8171 / #8179 / #8202 / #8205 / #8178，是一次持续数周的社区扫雷行动；本周 #8206 更把它固化成契约测试套件，从此新增 scheduler 漏写契约会在 collection 阶段直接失败。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>AutoTP 成熟化</h4>
+                        <p>#8167（ZeRO-3 推理 + TP）、#8146（<code>colwise_gather_output</code> 支持 <code>lm_head</code>）、#8187（HF <code>tp_plan</code> 的 UCP 元数据）、#8168（ZeRO-3 checkpoint 跨 TP 与 DP 合并）。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>MoE / AutoEP</h4>
+                        <p>#8174、#8195、#8190、#8155，以及本周合入的 #8180（Triton grouped-GEMM）与 #8209（路由去冗余）。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>三条大工作线的首次落地</h4>
+                        <p>#8184（ZeRO 0/1 的 <code>managed_gradient_accumulation</code>）、#8212（共享 DeepNVMe pinned-tensor manager）、#8203/#8217（非托管 GAS stage 2/3）、#8186（<code>offload_opt_states</code>）、#8157/#8159（DeepCompile）。</p>
+                    </div>
+                </div>
+
+                <div class="roadmap-section">
+                    <h3>📋 Q3 2026 Roadmap（Issue #8104）—— 本周无状态更新</h3>
+                    <p style="font-size:0.92em;color:#555;margin-bottom:12px;">
+                        当期生效的路线图仍是 <a href="https://github.com/deepspeedai/DeepSpeed/issues/8104">Issue #8104「DeepSpeed - Q3 Roadmap」</a>（PKUWZP 于 6/30 创建），<strong>最后更新时间为 7 月 31 日，本周内没有被改动</strong>——因此本周的 roadmap 信号完全来自代码与 RFC 活动，而非官方状态更新。反馈渠道为 Slack <code>#2026q3-roadmap</code>。已核实：<strong>该仓库没有使用 GitHub Milestones</strong>（API 返回空），规划完全走季度 roadmap issue；<strong>Discussions 虽已开启（266 条）但没有 Announcements/Roadmap 分类</strong>，本周仅有一条技术 Q&amp;A 被更新，roadmap/RFC 流量实际都在 Issues 里。
+                    </p>
+                    <div class="roadmap-item">
+                        <h4>Enhance Expert-Parallelism —— 本周执行最密集的方向 ✅🚧</h4>
+                        <p>对应 "EP performance optimization and benchmarking"：#8180（Ampere/Ada Triton grouped-GEMM，已合入）、#8209（路由去冗余，A100 -26% / H200 -40%，已合入）、#8198（AutoEP ZeRO-1/2 universal 转换修复，已合入）、#8213（DeepEP transport，review 中，作者自测最高 2.49×）。AutoEP 与 AutoEP+AutoTP 在 roadmap 中已标记完成，Liger-Kernel LM-head 分片 / Online Softmax 仍未完成——其实现载体 <a href="https://github.com/deepspeedai/DeepSpeed/issues/8173">RFC #8173</a> 最后更新于 8/2，本周无新进展。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>DeepCompile 效率与鲁棒性 —— 转入「拆分可 review」阶段 🚧</h4>
+                        <p>大 PR <a href="https://github.com/deepspeedai/DeepSpeed/pull/8169">#8169</a>（Stabilize DeepCompile ZeRO-3 memory scheduling）本周被<strong>主动关闭并拆成 stacked 序列</strong>：#8233（内存调度器）→ #8234（自适应 gather-buffer 池 + 分配器压力恢复），两者均已通过 2×H100 测试、等待 review。已合入的 #8186 打通了 inductor 下的优化器状态 offload（对应 roadmap 的 activation/state offloading 条目），#8157 修掉 gathered 参数归属问题。此外 review 中的 #8214（冻结参数 KeyError）与 #8240（Python 3.9 staticmethod）指向同一个主题：<strong>DeepCompile 的适用面正在被真实用户场景（LoRA/PEFT、老 Python）逼着拓宽。</strong></p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>非托管梯度累积 —— 自下而上涌现的方向，本周基本闭环 ✅</h4>
+                        <p>驱动 issue <a href="https://github.com/deepspeedai/DeepSpeed/issues/8183">#8183</a> 明确写出动机：引擎内部的 micro-step 计数<strong>对想自己掌控优化器步边界的调用方是失效的——尤其是 HTTP/RPC 驱动的 RL 后端（点名 Tinker 协议服务端）</strong>，那里一个逻辑优化器步表现为 N 次 <code>backward()</code> 后恰好一次 <code>step()</code>，且 N 由客户端控制、配置期无法预知；issue 还指出 FSDP 原生支持这一点，而 DeepSpeed 只有易错的 <code>set_gradient_accumulation_boundary(bool)</code>。本周三天内走完 #8203（stage 2）→ #8217（stage 3）→ #8225（offload）。<strong>值得注意的是：这条线并不在 #8104 的 Q3 roadmap 列表里，属于维护者自下而上推动的方向——也是本周最清晰的战略信号：DeepSpeed 正在被改造成 RL / agentic 训练循环的后端，在这个维度上与 FSDP 竞争。</strong></p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>Checkpoint / AutoTP 互操作 —— 正在收敛成一个统一的架构问题 💡</h4>
+                        <p>本周新出现的观察点：#8230（几何分片映射 RFC）、#8231（<code>tp_shard</code> 全局变量）、#8185（非均匀分片，review 中）、#8168、#8187、#8198 全部指向同一条接缝——<strong>AutoTP 的运行时切分 vs. universal checkpoint 的转换</strong>。delock 在同一天（8/7）从一次 PR review 里拆出两个设计/tracking issue，显示出<strong>要从架构上一次性解决、而不再逐模型打补丁</strong>的意图。该方向目前不在 #8104 中，是<strong>Q4 roadmap 的有力候选</strong>。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>DeepNVMe / 内存 pinning 重构 —— 未列入 roadmap 但推进很快 🚧</h4>
+                        <p>#8212（共享 pinned-tensor manager + 区间识别，已合入）→ #8236（拆出独立 <code>pin_memory</code> op，<strong>摆脱 libaio 依赖</strong>，已合入）→ #8211（<code>DS_PIN_MEMORY_BACKEND=native</code>，review 中）。工程意义在于降低 DeepNVMe/offload 的部署门槛：<code>ds_report</code> 现在在没有 libaio-dev 的机器上也能显示 <code>pin_memory [OKAY]</code>。</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <h4>其他 Roadmap 条目 —— 本周无公开进展</h4>
+                        <p>新加速器（TPU、壁仞 Biren）、On-Policy Distillation trainer（<a href="https://github.com/deepspeedai/DeepSpeed/issues/8197">#8197</a> 最后更新 8/2）、Ray 流水线并行、Tuning Guide 与性能回归测试、跨 CUDA/AMD/XPU/Gaudi/NPU 的 nightly full test 等方向，本周均无新的公开进展。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary & Highlights -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">💡</span> 本周亮点总结</h2>
+                <div style="background:#f0f7ff;border-radius:12px;padding:20px;border:1px solid #cce5ff;">
+                    <ul style="list-style:none;padding:0;">
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🎉</span>
+                            <strong>v0.19.4 发布</strong> — 8/6 发布补丁版本，约 41 个 PR、7 位新贡献者。主题是 LR 调度器正确性专项 + AutoTP 成熟化 + MoE/AutoEP 优化，并带上三条大工作线的首批切片。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🧩</span>
+                            <strong>非托管梯度累积三天闭环</strong> — <code>managed_gradient_accumulation=false</code> 从 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8203">#8203</a>（ZeRO-2，并解禁 <code>overlap_comm</code>）→ <a href="https://github.com/deepspeedai/DeepSpeed/pull/8217">#8217</a>（ZeRO-3）→ <a href="https://github.com/deepspeedai/DeepSpeed/pull/8225">#8225</a>（CPU/NVMe offload），<strong>覆盖 ZeRO 全栈</strong>。面向 RL / Tinker 协议后端自主掌控优化器步边界（Issue <a href="https://github.com/deepspeedai/DeepSpeed/issues/8183">#8183</a>），是本周最清晰的战略信号。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🚀</span>
+                            <strong>MoE 在 Ampere/Ada 上终于有了融合 grouped-GEMM</strong> — <a href="https://github.com/deepspeedai/DeepSpeed/pull/8180">#8180</a> 补上 <code>torch._grouped_mm</code> 只在 Hopper 有融合 kernel 的缺口，A100/A6000/RTX30xx 从「逐专家 Python 循环 + device→host 同步」升级为单个 Triton 融合 kernel，实测前反向最高约 <strong>3.5×（对 Torch）</strong>。配合 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8209">#8209</a> 的路由去冗余（H200 -40%），MoE 训练路径本周提速明显。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">⚠️</span>
+                            <strong>四个「静默算错」类 bug 被清掉</strong> — <a href="https://github.com/deepspeedai/DeepSpeed/pull/8158">#8158</a>（ZeRO-3 padded 参数在 SUM 语义 all_reduce 下把未初始化内存加进下一个参数）、<a href="https://github.com/deepspeedai/DeepSpeed/pull/8199">#8199</a>（<code>trim_mean</code> 原地排序打乱通信日志的行对应关系）、<a href="https://github.com/deepspeedai/DeepSpeed/pull/8178">#8178</a>（<code>set_checkpoint_interval</code> 写死属性、调度静默不变）、<a href="https://github.com/deepspeedai/DeepSpeed/pull/8210">#8210</a>（ZeRO++ 小参数二级分片越界，顺带清零 padding 防未初始化值泄漏）。<strong>都属于不报错但结果错的类型，升级前值得对照自查。</strong>
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🔴</span>
+                            <strong>但也来了一个更严重的、尚未修复的</strong> — Issue <a href="https://github.com/deepspeedai/DeepSpeed/issues/8224">#8224</a>：<strong>ZeRO-2 + bf16 多 rank 下，子模块单步内被复用多次时梯度静默算错，0.18.3 起引入、0.19.3 仍在。</strong>报告者做了逐版本二分并指认 #7665。若你的模型有共享 encoder / 多子图复用同一参数的结构，建议暂缓升级或先做梯度校验。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">💾</span>
+                            <strong>DeepNVMe 摆脱 libaio 依赖</strong> — <a href="https://github.com/deepspeedai/DeepSpeed/pull/8236">#8236</a> 把 host 页锁定拆成独立的 <code>deepspeed.ops.pin_memory</code> op，不再需要 libaio 与 AIO worker 线程，并与 <code>async_io</code>/<code>gds</code> 共享同一个进程级 manager；配合 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8212">#8212</a> 的区间式 pinned 识别，offload 路径少了很多不必要的 bounce buffer 拷贝。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">⚡</span>
+                            <strong>ZeRO-3 梯度 offload 补上 <code>non_blocking</code>，并改了默认值</strong> — <a href="https://github.com/deepspeedai/DeepSpeed/pull/8207">#8207</a> 发现 stage 3 是唯一没用异步拷贝的（stage 1/2 早就用了），且 offload buffer 默认非 pinned。修完 backward 提速 18-28%。<strong>注意这是默认行为变更</strong>：<code>offload_optimizer/offload_param</code> 的 <code>pin_memory</code> 现在默认 <code>True</code>，<code>ulimit -l</code> 很紧的机器需显式关掉。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🏛️</span>
+                            <strong>两个架构级 RFC 出现，Q4 方向初现</strong> — delock 在 8/7 一天内从一次 review 里拆出 <a href="https://github.com/deepspeedai/DeepSpeed/issues/8230">#8230</a>（Universal checkpoint 改用非语义几何分片映射，让转换器不再与模型绑定，并可解锁跨拓扑在线权重传输）与 <a href="https://github.com/deepspeedai/DeepSpeed/issues/8231">#8231</a>（<code>tp_shard</code> 进程级全局变量导致一个进程无法安全跑两个 AutoTP 模型）。二者都不在 Q3 roadmap 内，是 Q4 的有力候选。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🧪</span>
+                            <strong>LR 调度器修复被固化成「契约」</strong> — <a href="https://github.com/deepspeedai/DeepSpeed/pull/8206">#8206</a> 把连续数周零散的 tensor-LR 回归测试换成表驱动契约套件，并加了注册表覆盖断言：新增 scheduler 若漏写契约行，<strong>pytest collection 阶段就会指名报错</strong>。是从「修 bug」升级到「防同类 bug」的范例。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">👀</span>
+                            <strong>Review 队列里最该盯的两个</strong> — <a href="https://github.com/deepspeedai/DeepSpeed/pull/8213">#8213</a>（AutoEP 的 DeepEP transport，作者自测最高 2.49× 且抗路由倾斜，目前 Changes Requested）与 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8226">#8226</a>（Ulysses SP checkpoint rank 选择错误，<strong>已 Approved，即将合入</strong>）。此外 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8233">#8233</a>/<a href="https://github.com/deepspeedai/DeepSpeed/pull/8234">#8234</a> 合计 3348 行新增，是本周体量最大的待审工作。
+                        </li>
+                        <li style="margin-bottom:12px;padding-left:24px;position:relative;">
+                            <span style="position:absolute;left:0;">🔁</span>
+                            <strong>一个小插曲</strong> — DCO workflow 8/3 被 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8188">#8188</a> 删除（理由是官方 DCO App 已支持 merge queue），8/6 又被 <a href="https://github.com/deepspeedai/DeepSpeed/pull/8220">#8220</a> 完整恢复，说明官方 App 的 merge queue 支持在实际使用中仍不够用。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Contributors -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">👥</span> 本周活跃贡献者</h2>
+                <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:20px;">
+                    <p style="font-size:0.92em;color:#555;">
+                        本周 25 个合入 PR 来自 <strong>13 位作者</strong>。按合入数量：
+                        <strong>sfc-gh-truwase</strong>（4：非托管 GAS stage2/3/offload + pin_memory 拆分）、
+                        <strong>tohtana</strong>（5：DeepCompile 参数归属、AutoEP UCP 转换、OneCycle tensor LR、DCO workflow ×2）、
+                        <strong>hwchen2017</strong>（3：Triton grouped-GEMM、AutoEP 路由、c++20）、
+                        <strong>loadams</strong>（3：v0.19.4 发布 ×2、actions 升级）、
+                        <strong>vineethsaivs</strong>（2：pipeline checkpoint interval、trim_mean）、
+                        <strong>ebarkhordar</strong>（2：MLU accelerator、ZeRO-3 padded stride）、
+                        <strong>delock</strong>（2：LR 契约测试、ZeRO-3 异步梯度 offload）；
+                        另有 <strong>pengdurice</strong>、<strong>adityasingh2400</strong>、<strong>ZyEng-Art</strong> 各 1 个。
+                        review 队列侧，<strong>vineethsaivs</strong> 本周新提了 3 个「静默错误」类修复（#8227/#8237/#8239），是社区侧最活跃的挖 bug 者。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated on 2026-08-10 | 统计区间: 2026-08-03 ~ 2026-08-09 | Data source: <a href="https://github.com/deepspeedai/DeepSpeed" target="_blank">deepspeedai/DeepSpeed</a></p>
+            <p style="margin-top:6px;"><a href="index.html">&larr; 返回周报列表</a></p>
+        </div>
+    </div>
+</body>
+</html>
